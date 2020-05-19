@@ -1,12 +1,19 @@
 extern crate bitsors;
-use std::collections::HashMap;
 
 use bitsors::client::Bitso;
 
 #[tokio::test]
-async fn test_get() {
+async fn test_available_books() {
     let bitso = Bitso::default()
         .build();
-    let result = bitso.get("https://api.bitso.com/v3/available_books/", &mut HashMap::new()).await;
+    let result = bitso.get_available_books().await;
+    println!("{:?}", result);
+}
+
+#[tokio::test]
+async fn test_ticker() {
+    let bitso = Bitso::default()
+        .build();
+    let result = bitso.get_ticker().await;
     println!("{:?}", result);
 }

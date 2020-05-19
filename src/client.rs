@@ -1,19 +1,18 @@
 use std::collections::HashMap;
+use reqwest::Client;
+use reqwest::Method;
+
+lazy_static! {
+    /// HTTP Client
+    pub static ref CLIENT: Client = Client::new();
+}
 
 /// Bitso API object
-pub struct Bitso {
-    pub prefix: String,
-}
+pub struct Bitso {  }
 
 impl Bitso {
     pub fn default() -> Bitso {
-        Bitso {
-            prefix: "https://api.bitso.com/v3/".to_owned(),
-        }
-    }
-    pub fn prefix(mut self, prefix: &str) -> Bitso {
-        self.prefix = prefix.to_owned();
-        self
+        Bitso {  }
     }
     pub fn build(self) -> Bitso {
         self
@@ -26,13 +25,28 @@ impl Bitso {
         if !params.is_empty() {
             Ok(())
         } else {
-            let resp = reqwest::get(url).await?;
-            let body = resp.text().await?;
-                // .json::<HashMap<String, String>>()
-                // .await?;
-            println!("{:?}", body);
+            let response = {
+                let builder = CLIENT.request(Method::GET, url);
+                builder.send().await?
+            };
+            if response.status().is_success() {
+                let body = response.text().await?;
+                println!("{:?}", body);
+            }
             Ok(())
         }
+    }
+    pub async fn get_available_books(
+        &self
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let url = String::from("https://api.bitso.com/v3/available_books/");
+        self.get(&url, &mut HashMap::new()).await
+    }
+    pub async fn get_ticker(
+        &self
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let url = String::from("https://api.bitso.com/v3/ticker/");
+        self.get(&url, &mut HashMap::new()).await
     }
 }
 
