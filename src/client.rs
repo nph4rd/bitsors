@@ -26,11 +26,11 @@ impl Bitso {
         if !params.is_empty() {
             Ok(())
         } else {
-            let resp = reqwest::get(url)
-                .await?
-                .json::<HashMap<String, String>>()
-                .await?;
-            println!("{:#?}", resp);
+            let resp = reqwest::get(url).await?;
+            let body = resp.text().await?;
+                // .json::<HashMap<String, String>>()
+                // .await?;
+            println!("{:?}", body);
             Ok(())
         }
     }

@@ -7,5 +7,6 @@ use bitsors::client::Bitso;
 async fn test_get() {
     let bitso = Bitso::default()
         .build();
-    let _result = bitso.get("https://api.bitso.com/v3/available_books/", &mut HashMap::new()).await;
+    let result = bitso.get("https://api.bitso.com/v3/available_books/", &mut HashMap::new()).await;
+    println!("{:?}", result);
 }
