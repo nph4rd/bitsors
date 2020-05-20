@@ -84,7 +84,21 @@ impl Bitso {
         if let Some(_order_book) = order_book {
             params.insert("order_book".to_owned(), _order_book.to_string());
         }
-        let url = String::from("https://api.bitso.com/v3/ticker/");
+        let url = String::from("https://api.bitso.com/v3/order_book/");
+        self.get(&url, &mut params).await
+    }
+
+    /// Make a get request to pull a specific trade
+    /// https://bitso.com/api_info/#trades
+    pub async fn get_order_trades(
+        &self,
+        book: Option<&str>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let mut params = HashMap::new();
+        if let Some(_book) = book {
+            params.insert("book".to_owned(), _book.to_string());
+        }
+        let url = String::from("https://api.bitso.com/v3/trades/");
         self.get(&url, &mut params).await
     }
 }
