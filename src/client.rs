@@ -12,12 +12,18 @@ lazy_static! {
 pub struct Bitso {  }
 
 impl Bitso {
+
+    /// Bitso instance
     pub fn default() -> Bitso {
         Bitso {  }
     }
+
+    /// Build Bitso API object
     pub fn build(self) -> Bitso {
         self
     }
+
+    /// Function to make get requests
     pub async fn get(
         &self,
         url: &str,
@@ -49,18 +55,27 @@ impl Bitso {
             Ok(())
         }
     }
+
+    /// Make a get request to pull available books
+    /// https://bitso.com/api_info/#available-books
     pub async fn get_available_books(
         &self
     ) -> Result<(), Box<dyn std::error::Error>> {
         let url = String::from("https://api.bitso.com/v3/available_books/");
         self.get(&url, &mut HashMap::new()).await
     }
+
+    /// Make a get request to pull ticker
+    /// https://bitso.com/api_info/#ticker
     pub async fn get_ticker(
         &self
     ) -> Result<(), Box<dyn std::error::Error>> {
         let url = String::from("https://api.bitso.com/v3/ticker/");
         self.get(&url, &mut HashMap::new()).await
     }
+
+    /// Make a get request to pull a specific order book
+    /// https://bitso.com/api_info/#order-book
     pub async fn get_order_book(
         &self,
         order_book: Option<&str>,
