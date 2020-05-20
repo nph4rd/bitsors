@@ -25,3 +25,12 @@ async fn test_order_book() {
     let result = bitso.get_order_book(Some("btc_mxn")).await;
     println!("{:?}", result);
 }
+
+#[tokio::test]
+async fn test_trades() {
+    let bitso = Bitso::default()
+        .build();
+    let result = bitso.get_trades(Some("btc_mxn")).await;
+    println!("{:?}", result);
+}
+
