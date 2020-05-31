@@ -162,11 +162,16 @@ impl Bitso {
 
     /// Make a get request to pull ticker
     /// https://bitso.com/api_info/#ticker
-    pub async fn ticker(
-        &self
+    pub async fn get_ticker(
+        &self,
+        book: Option<&str>,
     ) -> Result<Ticker, failure::Error> {
+        let mut params = HashMap::new();
+        if let Some(_book) = book {
+            params.insert("book".to_owned(), _book.to_string());
+        }
         let url = String::from("ticker/");
-        let result = self.get(&url, &mut HashMap::new()).await?;
+        let result = self.get(&url, &mut params).await?;
         self.convert_result::<Ticker>(&result)
     }
 
