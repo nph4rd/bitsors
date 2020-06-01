@@ -52,7 +52,7 @@ impl ApiError {
         response: reqwest::Response
     ) -> Self {
         match response.status() {
-            StatusCode::BAD_REQUEST => ApiError::RegularError{success: false, error: String::from("s")},
+            StatusCode::BAD_REQUEST => ApiError::RegularError{success: false, error: String::from("Bad request")},
             status => ApiError::Other(status.as_u16()),
         }
     }
