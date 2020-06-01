@@ -38,8 +38,32 @@ pub struct BookTicker {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OrderBook {
-    pub test: bool,
+    pub success: bool,
+    pub payload: OrderBookPayload,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OrderBookPayload {
+    asks: Vec<Ask>,
+    bids: Vec<Bid>,
+    updated_at: String,
+    sequence: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Ask {
+    book: String,
+    price: String,
+    amount: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Bid {
+    book: String,
+    price: String,
+    amount: String,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Trades {
     pub test: bool,
