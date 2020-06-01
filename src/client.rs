@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use reqwest::Client;
 use reqwest::Method;
+use reqwest::StatusCode;
 use serde::de::Deserialize;
 use serde_json::Value;
 use super::util::convert_map_to_string;
@@ -18,8 +19,8 @@ lazy_static! {
 pub enum ApiError {
     #[serde(alias = "error")]
     RegularError {
-        status: u16,
-        message: String,
+        success: bool,
+        error: String,
     },
     Other(u16),
 }
@@ -28,12 +29,12 @@ impl failure::Fail for ApiError {}
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ApiError::RegularError { status, message } => {
+            ApiError::RegularError { success, error } => {
                 write!(
                     f,
                     "Bitso API error code {}: {}",
-                    status,
-                    message
+                    success,
+                    error
                 )
             },
             ApiError::Other(s) => {
@@ -51,6 +52,7 @@ impl ApiError {
         response: reqwest::Response
     ) -> Self {
         match response.status() {
+            StatusCode::BAD_REQUEST => ApiError::RegularError{success: false, error: String::from("s")},
             status => ApiError::Other(status.as_u16()),
         }
     }
