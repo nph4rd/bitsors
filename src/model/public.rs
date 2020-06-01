@@ -66,5 +66,17 @@ pub struct Bid {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Trades {
-    pub test: bool,
+    pub success: bool,
+    pub payload: Vec<Trade>,
+}
+
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Trade {
+    book: String,
+    created_at: String,
+    amount: String,
+    maker_side: String,
+    price: String,
+    tid: u64,
 }
