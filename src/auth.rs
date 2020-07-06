@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::env;
 use dotenv::dotenv;
 
@@ -18,6 +19,14 @@ impl BitsoCredentials {
             api_key,
             api_secret,
         }
+    }
+    pub fn get_auth(
+        &self,
+        method: &str,
+        path: String,
+        params: HashMap<String, String>,
+    ) -> String {
+        String::from("bla")
     }
 }
 
