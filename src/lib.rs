@@ -6,8 +6,10 @@ extern crate serde_json;
 extern crate serde_derive;
 #[macro_use]
 extern crate lazy_static;
+extern crate dotenv;
 #[macro_use]
 extern crate failure;
 pub mod client;
 pub mod util;
 pub mod model;
+pub mod auth;
