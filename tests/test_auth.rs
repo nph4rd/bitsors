@@ -5,6 +5,7 @@ use bitsors::auth::BitsoCredentials;
 /// Test credential set-up
 #[test]
 fn test_credentials_setup() {
-    let auth = BitsoCredentials::default();
+    let auth = BitsoCredentials::default()
+        .build();
     println!("{:?}", auth);
 }
