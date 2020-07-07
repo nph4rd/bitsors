@@ -5,6 +5,7 @@ use reqwest::StatusCode;
 use serde::de::Deserialize;
 use serde_json::Value;
 use super::util::convert_map_to_string;
+use super::auth::BitsoCredentials;
 use std::borrow::Cow;
 use std::fmt;
 use super::model::public::{AvailableBooks, Ticker, OrderBook, Trades};
@@ -59,13 +60,19 @@ impl ApiError {
 }
 
 /// Bitso API object
-pub struct Bitso {  }
+pub struct Bitso {
+    pub prefix: String,
+    pub client_credentials_manager: Option<BitsoCredentials>,
+}
 
 impl Bitso {
 
     /// Bitso instance
     pub fn default() -> Bitso {
-        Bitso {  }
+        Bitso {
+            prefix: "https://api.bitso.com".to_owned(),
+            client_credentials_manager: None,
+        }
     }
 
     /// Build Bitso API object
