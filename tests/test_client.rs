@@ -1,5 +1,6 @@
 extern crate bitsors;
 
+use bitsors::auth::BitsoCredentials;
 use bitsors::client::Bitso;
 
 /// Test successful request to get available books
@@ -63,4 +64,15 @@ async fn test_trades_unsuccessfull() {
         .build();
     let result = bitso.get_trades(Some("CREATEERROR")).await;
     println!("{:?}", result);
+}
+
+#[test]
+fn test_auth_headers() {
+    let client_credentials = BitsoCredentials::default()
+        .build();
+    let bitso = Bitso::default()
+        .client_credentials_manager(client_credentials)
+        .build();
+    let head = bitso.auth_headers();
+    println!("{}", head);
 }

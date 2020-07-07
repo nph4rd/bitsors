@@ -93,6 +93,24 @@ impl Bitso {
         self
     }
 
+    pub fn auth_headers(&self) -> String {
+        let api_key = self
+            .client_credentials_manager
+            .as_ref()
+            .unwrap()
+            .get_key();
+            // .unwrap()
+            // .get_key();
+        let nonce = "nonce".to_owned();
+        let signature = "sig".to_owned();
+        format!(
+            "Bitso {}:{}:{}",
+            api_key,
+            nonce,
+            signature,
+        )
+    }
+
     async fn internal_call(
         &self,
         method: Method,

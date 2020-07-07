@@ -9,6 +9,7 @@ pub struct BitsoCredentials {
 }
 
 impl BitsoCredentials {
+
     pub fn default() -> BitsoCredentials {
         dotenv().ok();
         let api_key = env::var("API_KEY")
@@ -22,6 +23,10 @@ impl BitsoCredentials {
     }
     pub fn build(self) -> BitsoCredentials {
         self
+    }
+
+    pub fn get_key(&self) -> String {
+        self.api_key.to_owned()
     }
 
     pub fn get_auth(
