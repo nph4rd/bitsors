@@ -20,6 +20,10 @@ impl BitsoCredentials {
             api_secret,
         }
     }
+    pub fn build(self) -> BitsoCredentials {
+        self
+    }
+
     pub fn get_auth(
         &self,
         method: &str,
