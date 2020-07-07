@@ -75,6 +75,19 @@ impl Bitso {
         }
     }
 
+    pub fn prefix(mut self, prefix: &str) -> Bitso {
+        self.prefix = prefix.to_owned();
+        self
+    }
+
+    pub fn client_credentials_manager(
+        mut self,
+        client_credential_manager: BitsoCredentials,
+    ) -> Bitso {
+        self.client_credentials_manager = Some(client_credential_manager);
+        self
+    }
+
     /// Build Bitso API object
     pub fn build(self) -> Bitso {
         self
