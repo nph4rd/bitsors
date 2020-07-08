@@ -1,3 +1,5 @@
+extern crate openssl;
+extern crate hex;
 extern crate reqwest;
 extern crate serde;
 // #[macro_use]

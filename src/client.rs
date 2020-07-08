@@ -1,4 +1,9 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+use hex::encode;
 use std::collections::HashMap;
+use openssl::hash::MessageDigest;
+use openssl::pkey::PKey;
+use openssl::sign::Signer;
 use reqwest::Client;
 use reqwest::Method;
 use reqwest::StatusCode;
@@ -93,16 +98,55 @@ impl Bitso {
         self
     }
 
-    pub fn auth_headers(&self) -> String {
+    pub fn auth_headers(
+        &self,
+        method: Method,
+        request_path: &str,
+        payload: Option<String>,
+    ) -> String {
+        let payload_string: String;
+        if method != Method::POST {
+            payload_string = "".to_owned();
+        } else {
+            if let Some(p) = payload {
+                payload_string = p;
+            } else {
+                panic!("POST method must have a payload.")
+            }
+        }
         let api_key = self
             .client_credentials_manager
             .as_ref()
             .unwrap()
             .get_key();
-            // .unwrap()
-            // .get_key();
-        let nonce = "nonce".to_owned();
-        let signature = "sig".to_owned();
+        let api_secret = self
+            .client_credentials_manager
+            .as_ref()
+            .unwrap()
+            .get_secret();
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs()
+            .to_string();
+        let message = format!(
+            "{}{}{}{}",
+            nonce,
+            method.as_str().to_owned(),
+            request_path.to_owned(),
+            payload_string
+        );
+        let key = PKey::hmac(
+            api_secret.as_bytes()
+        ).unwrap();
+        let mut signer = Signer::new(
+            MessageDigest::sha256(),
+            &key
+        ).unwrap();
+        signer.update(message.as_bytes()).unwrap();
+        let signature = encode(
+            signer.sign_to_vec().unwrap()
+        );
         format!(
             "Bitso {}:{}:{}",
             api_key,

@@ -1,5 +1,7 @@
 extern crate bitsors;
+extern crate reqwest;
 
+use reqwest::Method;
 use bitsors::auth::BitsoCredentials;
 use bitsors::client::Bitso;
 
@@ -69,10 +71,16 @@ async fn test_trades_unsuccessfull() {
 #[test]
 fn test_auth_headers() {
     let client_credentials = BitsoCredentials::default()
+        .api_secret("secret")
+        .api_key("key")
         .build();
     let bitso = Bitso::default()
         .client_credentials_manager(client_credentials)
         .build();
-    let head = bitso.auth_headers();
+    let head = bitso.auth_headers(
+        Method::GET,
+        "path",
+        None
+    );
     println!("{}", head);
 }
