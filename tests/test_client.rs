@@ -78,7 +78,7 @@ fn test_auth_headers() {
         .client_credentials_manager(client_credentials)
         .build();
     let head = bitso.auth_headers(
-        Method::GET,
+        &Method::GET,
         "path",
         None
     );
