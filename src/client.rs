@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use openssl::hash::MessageDigest;
 use openssl::pkey::PKey;
 use openssl::sign::Signer;
+use reqwest::header::{HeaderMap, AUTHORIZATION, CONTENT_TYPE};
 use reqwest::Client;
 use reqwest::Method;
 use reqwest::StatusCode;
@@ -14,10 +15,18 @@ use super::auth::BitsoCredentials;
 use std::borrow::Cow;
 use std::fmt;
 use super::model::public::{AvailableBooks, Ticker, OrderBook, Trades};
+use super::model::private::{AccountStatus};
 
 lazy_static! {
     /// HTTP Client
     pub static ref CLIENT: Client = Client::new();
+}
+
+
+/// API Type
+pub enum ApiType {
+    Public,
+    Private
 }
 
 /// API Errors
@@ -100,16 +109,16 @@ impl Bitso {
 
     pub fn auth_headers(
         &self,
-        method: Method,
+        method: &Method,
         request_path: &str,
-        payload: Option<String>,
+        payload: Option<&Value>,
     ) -> String {
         let payload_string: String;
         if method != Method::POST {
             payload_string = "".to_owned();
         } else {
-            if let Some(p) = payload {
-                payload_string = p;
+            if let Some(json) = payload {
+                payload_string = json.to_string();
             } else {
                 panic!("POST method must have a payload.")
             }
@@ -160,19 +169,40 @@ impl Bitso {
         method: Method,
         url: &str,
         payload: Option<&Value>,
+        api_type: ApiType,
     ) -> Result<String, failure::Error> {
         let mut url: Cow<str> = url.into();
+
+        let mut headers = HeaderMap::new();
+        if let ApiType::Private = api_type {
+            headers.insert(
+                AUTHORIZATION,
+                self.auth_headers(
+                    &method,
+                    &url,
+                    payload
+                ).parse().unwrap()
+            );
+            headers.insert(
+                CONTENT_TYPE,
+                "application/json".parse().unwrap()
+            );
+        }
+
         if !url.starts_with("http") {
-            url = ["https://api.bitso.com/v3/", &url]
+            url = ["https://api.bitso.com", &url]
                 .concat()
                 .into();
         }
 
         let response = {
-            let builder = CLIENT.request(
+            let mut builder = CLIENT.request(
                 method,
                 &url.into_owned()
             );
+            if let ApiType::Private = api_type {
+                builder = builder.headers(headers);
+            }
             let builder = if let Some(json) = payload {
                 builder.json(json)
             } else {
@@ -201,6 +231,7 @@ impl Bitso {
         &self,
         url:&str,
         params: &mut HashMap<String, String>,
+        api_type: ApiType,
     ) -> Result<String, failure::Error> {
         if !params.is_empty() {
             let param: String = convert_map_to_string(params);
@@ -210,10 +241,11 @@ impl Bitso {
             self.internal_call(
                 Method::GET,
                 &url_with_params,
-                None
+                None,
+                api_type
             ).await
         } else {
-            self.internal_call(Method::GET, url, None).await
+            self.internal_call(Method::GET, url, None, api_type).await
         }
     }
 
@@ -239,8 +271,12 @@ impl Bitso {
     pub async fn get_available_books(
         &self
     ) -> Result<AvailableBooks, failure::Error> {
-        let url = String::from("available_books/");
-        let result = self.get(&url, &mut HashMap::new()).await?;
+        let url = String::from("/v3/vailable_books/");
+        let result = self.get(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Public
+        ).await?;
         self.convert_result::<AvailableBooks>(&result)
     }
 
@@ -254,8 +290,12 @@ impl Bitso {
         if let Some(_book) = book {
             params.insert("book".to_owned(), _book.to_string());
         }
-        let url = String::from("ticker/");
-        let result = self.get(&url, &mut params).await?;
+        let url = String::from("/v3/ticker/");
+        let result = self.get(
+            &url,
+            &mut params,
+            ApiType::Public
+        ).await?;
         self.convert_result::<Ticker>(&result)
     }
 
@@ -269,8 +309,12 @@ impl Bitso {
         if let Some(_book) = book {
             params.insert("book".to_owned(), _book.to_string());
         }
-        let url = String::from("order_book/");
-        let result = self.get(&url, &mut params).await?;
+        let url = String::from("/v3/order_book/");
+        let result = self.get(
+            &url,
+            &mut params,
+            ApiType::Public
+        ).await?;
         self.convert_result::<OrderBook>(&result)
     }
 
@@ -284,9 +328,25 @@ impl Bitso {
         if let Some(_book) = book {
             params.insert("book".to_owned(), _book.to_string());
         }
-        let url = String::from("trades/");
-        let result = self.get(&url, &mut params).await?;
+        let url = String::from("/v3/trades/");
+        let result = self.get(
+            &url,
+            &mut params,
+            ApiType::Public
+        ).await?;
         self.convert_result::<Trades>(&result)
+    }
+
+    pub async fn get_account_status(
+        &self,
+    ) -> Result<AccountStatus, failure::Error> {
+        let url = String::from("/v3/account_status/");
+        let result = self.get(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Private
+        ).await?;
+        self.convert_result::<AccountStatus>(&result)
     }
 }
 
