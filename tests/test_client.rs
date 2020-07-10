@@ -40,7 +40,7 @@ async fn test_ticker_unsuccessful() {
     let bitso = Bitso::default()
         .build();
     let result = bitso.get_ticker(Some("CREATEERROR")).await;
-    assert!(!result.is_ok());
+    assert!(result.is_err());
     println!("{:?}", result);
 }
 
@@ -60,7 +60,7 @@ async fn test_order_book_unsuccessful() {
     let bitso = Bitso::default()
         .build();
     let result = bitso.get_order_book(Some("CREATEERROR")).await;
-    assert!(!result.is_ok());
+    assert!(result.is_err());
     println!("{:?}", result);
 }
 
@@ -80,7 +80,7 @@ async fn test_trades_unsuccessful() {
     let bitso = Bitso::default()
         .build();
     let result = bitso.get_trades(Some("CREATEERROR")).await;
-    assert!(!result.is_ok());
+    assert!(result.is_err());
     println!("{:?}", result);
 }
 
@@ -102,5 +102,16 @@ async fn test_account_status_successful() {
         .build();
     let result = bitso.get_account_status().await;
     assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to get account status
+#[tokio::test]
+async fn test_account_status_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.get_account_status().await;
+    assert!(!result.is_ok());
     println!("{:?}", result);
 }
