@@ -22,6 +22,15 @@ lazy_static! {
     pub static ref CLIENT: Client = Client::new();
 }
 
+const EMPTY_CREDENTIALS_MSG: &str = "You need to set your Bitso API \
+                                     credentials. You can do this \
+                                     by setting environment variables \
+                                     in a `.env` file: \
+                                     API_KEY=your api_key \
+                                     API_SECRET=your_api_secret. \
+                                     For more information visit: \
+                                     `https://bitso.com/api_info#generating-api-keys`";
+
 
 /// API Type
 pub enum ApiType {
@@ -67,7 +76,10 @@ impl ApiError {
         response: reqwest::Response
     ) -> Self {
         match response.status() {
-            StatusCode::BAD_REQUEST => ApiError::RegularError{success: false, error: String::from("Bad request")},
+            StatusCode::BAD_REQUEST => ApiError::RegularError{
+                success: false,
+                error: String::from("Bad request")
+            },
             status => ApiError::Other(status.as_u16()),
         }
     }
@@ -123,6 +135,7 @@ impl Bitso {
                 panic!("POST method must have a payload.")
             }
         }
+
         let api_key = self
             .client_credentials_manager
             .as_ref()
@@ -133,6 +146,7 @@ impl Bitso {
             .as_ref()
             .unwrap()
             .get_secret();
+
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
@@ -341,6 +355,19 @@ impl Bitso {
         &self,
     ) -> Result<AccountStatus, failure::Error> {
         let url = String::from("/v3/account_status/");
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
         let result = self.get(
             &url,
             &mut HashMap::new(),
