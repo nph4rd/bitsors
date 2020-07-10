@@ -112,6 +112,6 @@ async fn test_account_status_unsuccessful() {
         .prefix("https://api-dev.bitso.com")
         .build();
     let result = bitso.get_account_status().await;
-    assert!(!result.is_ok());
+    assert!(result.is_err());
     println!("{:?}", result);
 }
