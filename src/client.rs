@@ -373,7 +373,6 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        println!("{:?}", result);
         self.convert_result::<AccountStatus>(&result)
     }
 }
