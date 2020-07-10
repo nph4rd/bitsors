@@ -136,7 +136,7 @@ impl Bitso {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_secs()
+            .as_millis()
             .to_string();
         let message = format!(
             "{}{}{}{}",
@@ -190,7 +190,7 @@ impl Bitso {
         }
 
         if !url.starts_with("http") {
-            url = ["https://api.bitso.com", &url]
+            url = [self.prefix.as_str(), &url]
                 .concat()
                 .into();
         }
@@ -271,7 +271,7 @@ impl Bitso {
     pub async fn get_available_books(
         &self
     ) -> Result<AvailableBooks, failure::Error> {
-        let url = String::from("/v3/vailable_books/");
+        let url = String::from("/v3/available_books/");
         let result = self.get(
             &url,
             &mut HashMap::new(),
@@ -346,6 +346,7 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
+        println!("{:?}", result);
         self.convert_result::<AccountStatus>(&result)
     }
 }
