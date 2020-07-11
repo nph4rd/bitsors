@@ -24,3 +24,25 @@ pub struct AccountStatusPayload {
     signed_contract: String,
     origin_of_funds: String,
 }
+
+/// From: https://bitso.com/api_info#account-balance
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AccountBalance {
+    pub success: bool,
+    pub payload: Balances,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Balances {
+    balances: Vec<AccountBalanceInstance>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AccountBalanceInstance {
+    currency: String,
+    available: String,
+    locked: String,
+    total: String,
+    pending_deposit: String,
+    pending_withdrawal: String,
+}
