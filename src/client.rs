@@ -15,7 +15,7 @@ use super::auth::BitsoCredentials;
 use std::borrow::Cow;
 use std::fmt;
 use super::model::public::{AvailableBooks, Ticker, OrderBook, Trades};
-use super::model::private::{AccountStatus};
+use super::model::private::{AccountStatus, AccountBalance};
 
 lazy_static! {
     /// HTTP Client
@@ -351,6 +351,13 @@ impl Bitso {
         self.convert_result::<Trades>(&result)
     }
 
+
+    ///
+    /// Private API
+    ///
+
+    /// Make a get request to get account status
+    /// https://bitso.com/api_info#account-status
     pub async fn get_account_status(
         &self,
     ) -> Result<AccountStatus, failure::Error> {
@@ -374,6 +381,33 @@ impl Bitso {
             ApiType::Private
         ).await?;
         self.convert_result::<AccountStatus>(&result)
+    }
+
+    /// Make a get request to get account balance
+    /// https://bitso.com/api_info#account-balance
+    pub async fn get_account_balance(
+        &self,
+    ) -> Result<AccountBalance, failure::Error> {
+        let url = String::from("/v3/balance/");
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.get(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Private
+        ).await?;
+        self.convert_result::<AccountBalance>(&result)
     }
 }
 
