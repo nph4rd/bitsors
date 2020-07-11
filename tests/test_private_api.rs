@@ -1,5 +1,7 @@
 extern crate bitsors;
 #[macro_use]
+extern crate serial_test;
+#[macro_use]
 extern crate lazy_static;
 
 use std::sync::Mutex;
@@ -18,6 +20,7 @@ lazy_static! {
 
 /// Test successful request to get account status
 #[tokio::test]
+#[serial]
 async fn test_account_status_successful() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
@@ -35,6 +38,7 @@ async fn test_account_status_successful() {
 
 /// Test unsuccessful request to get account status
 #[tokio::test]
+#[serial]
 async fn test_account_status_unsuccessful() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
@@ -46,6 +50,7 @@ async fn test_account_status_unsuccessful() {
 
 /// Test successful request to get account balance
 #[tokio::test]
+#[serial]
 async fn test_account_balance_successful() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
@@ -63,6 +68,7 @@ async fn test_account_balance_successful() {
 
 /// Test unsuccessful request to get account balance
 #[tokio::test]
+#[serial]
 async fn test_account_balance_unsuccessful() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
