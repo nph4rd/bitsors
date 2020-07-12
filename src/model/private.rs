@@ -46,3 +46,32 @@ pub struct AccountBalanceInstance {
     pending_deposit: String,
     pending_withdrawal: String,
 }
+
+/// From: https://bitso.com/api_info#account-balance
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Fees {
+    pub success: bool,
+    pub payload: FeesPayload,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FeesPayload {
+    fees: Vec<BookFee>,
+    withdrawal_fees: WithdrawalFees,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct BookFee {
+    book: String,
+    taker_fee_decimal: String,
+    taker_fee_percent: String,
+    maker_fee_decimal: String,
+    maker_fee_percent: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct WithdrawalFees {
+    btc: String,
+    eth: String,
+}
+

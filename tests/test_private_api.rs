@@ -77,3 +77,33 @@ async fn test_account_balance_unsuccessful() {
     assert!(result.is_err());
     println!("{:?}", result);
 }
+
+/// Test successful request to get fees
+#[tokio::test]
+#[serial]
+async fn test_fees_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.get_fees().await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to get fees
+#[tokio::test]
+#[serial]
+async fn test_fees_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.get_fees().await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}

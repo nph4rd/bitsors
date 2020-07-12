@@ -15,7 +15,7 @@ use super::auth::BitsoCredentials;
 use std::borrow::Cow;
 use std::fmt;
 use super::model::public::{AvailableBooks, Ticker, OrderBook, Trades};
-use super::model::private::{AccountStatus, AccountBalance};
+use super::model::private::{AccountStatus, AccountBalance, Fees};
 
 lazy_static! {
     /// HTTP Client
@@ -408,6 +408,33 @@ impl Bitso {
             ApiType::Private
         ).await?;
         self.convert_result::<AccountBalance>(&result)
+    }
+
+    /// Make a get request to get fees
+    /// https://bitso.com/api_info#fees
+    pub async fn get_fees(
+        &self,
+    ) -> Result<Fees, failure::Error> {
+        let url = String::from("/v3/fees/");
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.get(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Private
+        ).await?;
+        self.convert_result::<Fees>(&result)
     }
 }
 
