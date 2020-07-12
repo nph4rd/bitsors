@@ -75,3 +75,31 @@ pub struct WithdrawalFees {
     eth: String,
 }
 
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Ledger {
+    pub success: bool,
+    pub payload: Vec<LedgerInstance>
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct LedgerInstance {
+    eid: String,
+    operation: String,
+    created_at: String,
+    balance_updates: BalanceUpdate,
+    details: Details
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct BalanceUpdate {
+    currency: String,
+    amount: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Details {
+    tid: String,
+    oid: String,
+}
+
