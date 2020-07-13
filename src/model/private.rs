@@ -126,3 +126,26 @@ pub struct WithdrawalDetails {
     tx_hash: String,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Fundings {
+    pub success: bool,
+    pub payload: Vec<FundingsPayload>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FundingsPayload {
+    fid: String,
+    status: String,
+    created_at: String,
+    currency: String,
+    method: String,
+    amount: String,
+    details: FundingDetails,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FundingDetails {
+    funding_address: String,
+    tx_hash: String,
+}
+
