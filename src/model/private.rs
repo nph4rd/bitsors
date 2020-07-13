@@ -79,7 +79,7 @@ pub struct WithdrawalFees {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ledger {
     pub success: bool,
-    pub payload: Vec<LedgerInstance>
+    pub payload: Vec<LedgerInstance>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -88,7 +88,7 @@ pub struct LedgerInstance {
     operation: String,
     created_at: String,
     balance_updates: BalanceUpdate,
-    details: Details
+    details: BalanceDetails,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -98,8 +98,31 @@ pub struct BalanceUpdate {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Details {
+pub struct BalanceDetails {
     tid: String,
     oid: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Withdrawals {
+    pub success: bool,
+    pub payload: Vec<WithdrawalsPayload>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct WithdrawalsPayload {
+    wid: String,
+    status: String,
+    created_at: String,
+    currency: String,
+    method: String,
+    amount: String,
+    details: WithdrawalDetails,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct WithdrawalDetails {
+    withdrawal_address: String,
+    tx_hash: String,
 }
 
