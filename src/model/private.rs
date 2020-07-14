@@ -169,3 +169,23 @@ pub struct UserTradesPayload {
     side: String,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OrderTrades {
+    success: bool,
+    payload: Vec<OrderTradesPayload>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OrderTradesPayload {
+    book: String,
+    major: String,
+    created_at: String,
+    minor: String,
+    fees_amount: String,
+    fees_currency: String,
+    price: String,
+    tid: String,
+    oid: String,
+    client_id: String,
+    side: String,
+}

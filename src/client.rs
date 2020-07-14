@@ -544,5 +544,33 @@ impl Bitso {
         ).await?;
         self.convert_result::<UserTrades>(&result)
     }
+
+    /// Make a get request to get fees
+    /// https://bitso.com/api_info#order-trades
+    pub async fn get_order_trades(
+        &self,
+        oid: &str,
+    ) -> Result<OrderTrades, failure::Error> {
+        let url = format!("/v3/order_trades/{}/", oid.to_owned());
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.get(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Private
+        ).await?;
+        self.convert_result::<OrderTrades>(&result)
+    }
 }
 

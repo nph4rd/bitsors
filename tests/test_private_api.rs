@@ -227,3 +227,33 @@ async fn test_user_trades_unsuccessful() {
     assert!(result.is_err());
     println!("{:?}", result);
 }
+
+/// Test successful request to get order_trades
+#[tokio::test]
+#[serial]
+async fn test_order_trades_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.get_order_trades("oid").await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to get order_trades
+#[tokio::test]
+#[serial]
+async fn test_order_trades_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.get_order_trades("oid").await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}
