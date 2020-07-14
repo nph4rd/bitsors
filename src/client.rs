@@ -572,5 +572,40 @@ impl Bitso {
         ).await?;
         self.convert_result::<OrderTrades>(&result)
     }
+
+    /// Make a get request to get fees
+    /// https://bitso.com/api_info#open-orders
+    pub async fn get_open_orders(
+        &self,
+        book: Option<&str>,
+    ) -> Result<OpenOrders, failure::Error> {
+        let mut url = String::from("/v3/open_orders");
+        if let Some(_book) = book {
+            url = format!(
+                "{}?book={}",
+                url,
+                _book.to_owned()
+            );
+        };
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.get(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Private
+        ).await?;
+        self.convert_result::<OpenOrders>(&result)
+    }
 }
 

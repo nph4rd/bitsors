@@ -241,8 +241,8 @@ async fn test_order_trades_successful() {
             .clone()
         )
         .build();
-    let result = bitso.get_order_trades("oid").await;
-    assert!(result.is_err());
+    let result = bitso.get_order_trades("fake-oid").await;
+    assert!(result.is_err()); // Bad request
     println!("{:?}", result);
 }
 
@@ -254,6 +254,54 @@ async fn test_order_trades_unsuccessful() {
         .prefix("https://api-dev.bitso.com")
         .build();
     let result = bitso.get_order_trades("oid").await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get open_orders
+#[tokio::test]
+#[serial]
+async fn test_open_orders_successful2() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.get_open_orders(None).await;
+    assert!(result.is_ok()); // Bad request
+    println!("{:?}", result);
+}
+
+/// Test successful request to get open_orders
+#[tokio::test]
+#[serial]
+async fn test_open_orders_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.get_open_orders(Some("btc_mxn")).await;
+    assert!(result.is_ok()); // Bad request
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to get open_orders
+#[tokio::test]
+#[serial]
+async fn test_open_orders_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.get_open_orders(None).await;
     assert!(result.is_err());
     println!("{:?}", result);
 }

@@ -189,3 +189,25 @@ pub struct OrderTradesPayload {
     client_id: String,
     side: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OpenOrders {
+    pub success: bool,
+    pub payload: Vec<OpenOrdersPayload>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OpenOrdersPayload {
+    book: String,
+    original_amount: String,
+    unfilled_amount: String,
+    original_value: String,
+    created_at: String,
+    updated_at: String,
+    price: String,
+    oid: String,
+    client_id: String,
+    side: String,
+    status: String,
+    r#type: String,
+}
