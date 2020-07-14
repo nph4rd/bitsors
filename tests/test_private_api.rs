@@ -197,3 +197,33 @@ async fn test_fundings_unsuccessful() {
     assert!(result.is_err());
     println!("{:?}", result);
 }
+
+/// Test successful request to get user_trades
+#[tokio::test]
+#[serial]
+async fn test_user_trades_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.get_user_trades().await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to get user_trades
+#[tokio::test]
+#[serial]
+async fn test_user_trades_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.get_user_trades().await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}

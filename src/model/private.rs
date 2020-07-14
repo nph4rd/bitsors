@@ -149,3 +149,23 @@ pub struct FundingDetails {
     tx_hash: String,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UserTrades {
+    success: bool,
+    payload: Vec<UserTradesPayload>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UserTradesPayload {
+    book: String,
+    major: String,
+    created_at: String,
+    minor: String,
+    fees_amount: String,
+    fees_currency: String,
+    price: String,
+    tid: String,
+    oid: String,
+    side: String,
+}
+
