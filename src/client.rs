@@ -263,6 +263,29 @@ impl Bitso {
         }
     }
 
+    /// Function to make delete requests
+    async fn delete(
+        &self,
+        url:&str,
+        params: &mut HashMap<String, String>,
+        api_type: ApiType,
+    ) -> Result<String, failure::Error> {
+        if !params.is_empty() {
+            let param: String = convert_map_to_string(params);
+            let mut url_with_params = url.to_owned();
+            url_with_params.push('?');
+            url_with_params.push_str(&param);
+            self.internal_call(
+                Method::DELETE,
+                &url_with_params,
+                None,
+                api_type
+            ).await
+        } else {
+            self.internal_call(Method::DELETE, url, None, api_type).await
+        }
+    }
+
     /// Function to convert result to models
     pub fn convert_result<'a, T: Deserialize<'a>>(
         &self,
@@ -606,6 +629,62 @@ impl Bitso {
             ApiType::Private
         ).await?;
         self.convert_result::<OpenOrders>(&result)
+    }
+
+    /// Make a get request to get fees
+    /// https://bitso.com/api_info#lookup-orders
+    pub async fn get_lookup_orders(
+        &self,
+        oid: &str,
+    ) -> Result<LookupOrders, failure::Error> {
+        let url = format!("/v3/orders/{}/", oid.to_owned());
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.get(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Private
+        ).await?;
+        self.convert_result::<LookupOrders>(&result)
+    }
+
+    /// Make a get request to get fees
+    /// https://bitso.com/api_info#cancel-order
+    pub async fn cancel_order(
+        &self,
+        oid: &str,
+    ) -> Result<OrderCancellation, failure::Error> {
+        let url = format!("/v3/orders/{}/", oid.to_owned());
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.delete(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Private
+        ).await?;
+        self.convert_result::<OrderCancellation>(&result)
     }
 }
 

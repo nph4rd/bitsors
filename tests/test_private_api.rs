@@ -305,3 +305,63 @@ async fn test_open_orders_unsuccessful() {
     assert!(result.is_err());
     println!("{:?}", result);
 }
+
+/// Test successful request to get lookup_orders
+#[tokio::test]
+#[serial]
+async fn test_lookup_orders_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.get_lookup_orders("fake-oid").await;
+    assert!(result.is_err()); // Bad request
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to get lookup_orders
+#[tokio::test]
+#[serial]
+async fn test_lookup_orders_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.get_lookup_orders("oid").await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}
+
+/// Test successful request to cancel_order
+#[tokio::test]
+#[serial]
+async fn test_cancel_order_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.cancel_order("fake-oid").await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to get lookup_orders
+#[tokio::test]
+#[serial]
+async fn test_cancel_order_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.cancel_order("oid").await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}

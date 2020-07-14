@@ -211,3 +211,30 @@ pub struct OpenOrdersPayload {
     status: String,
     r#type: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct LookupOrders {
+    pub success: bool,
+    pub payload: Vec<LookupOrdersPayload>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct LookupOrdersPayload {
+    book: String,
+    original_amount: String,
+    unfilled_amount: String,
+    original_value: String,
+    created_at: String,
+    updated_at: String,
+    price: String,
+    oid: String,
+    side: String,
+    status: String,
+    r#type: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OrderCancellation {
+    pub success: bool,
+    pub payload: Vec<String>,
+}
