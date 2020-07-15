@@ -87,7 +87,7 @@ pub struct LedgerInstance {
     eid: String,
     operation: String,
     created_at: String,
-    balance_updates: BalanceUpdate,
+    balance_updates: Vec<BalanceUpdate>,
     details: BalanceDetails,
 }
 
@@ -99,8 +99,13 @@ pub struct BalanceUpdate {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BalanceDetails {
-    tid: String,
-    oid: String,
+    tid: Option<String>,
+    oid: Option<String>,
+    fid: Option<String>,
+    wid: Option<String>,
+    method: Option<String>,
+    method_name: Option<String>,
+    funding_address: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -145,8 +150,16 @@ pub struct FundingsPayload {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FundingDetails {
-    funding_address: String,
-    tx_hash: String,
+    funding_address: Option<String>,
+    tx_hash: Option<String>,
+    sender_name: Option<String>,
+    sender_bank: Option<String>,
+    sender_clave: Option<String>,
+    receive_clave: Option<String>,
+    numeric_reference: Option<String>,
+    concepto: Option<String>,
+    clave_rastreo: Option<String>,
+    beneficiary_name: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

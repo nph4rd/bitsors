@@ -473,7 +473,7 @@ impl Bitso {
         self.convert_result::<Fees>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to get ledger
     /// https://bitso.com/api_info#ledger
     pub async fn get_ledger(
         &self,
@@ -500,7 +500,7 @@ impl Bitso {
         self.convert_result::<Ledger>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to get withdrawals
     /// https://bitso.com/api_info#withdrawals
     pub async fn get_withdrawals(
         &self,
@@ -527,7 +527,7 @@ impl Bitso {
         self.convert_result::<Withdrawals>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to get fundings
     /// https://bitso.com/api_info#fundings
     pub async fn get_fundings(
         &self,
@@ -554,7 +554,7 @@ impl Bitso {
         self.convert_result::<Fundings>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to get user trades
     /// https://bitso.com/api_info#user-trades
     pub async fn get_user_trades(
         &self,
@@ -581,7 +581,7 @@ impl Bitso {
         self.convert_result::<UserTrades>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to get order trades
     /// https://bitso.com/api_info#order-trades
     pub async fn get_order_trades(
         &self,
@@ -609,7 +609,7 @@ impl Bitso {
         self.convert_result::<OrderTrades>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to get open orders
     /// https://bitso.com/api_info#open-orders
     pub async fn get_open_orders(
         &self,
@@ -644,7 +644,7 @@ impl Bitso {
         self.convert_result::<OpenOrders>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to get lookup orders
     /// https://bitso.com/api_info#lookup-orders
     pub async fn get_lookup_orders(
         &self,
@@ -672,7 +672,7 @@ impl Bitso {
         self.convert_result::<LookupOrders>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to cancel order
     /// https://bitso.com/api_info#cancel-order
     pub async fn cancel_order(
         &self,
@@ -700,7 +700,7 @@ impl Bitso {
         self.convert_result::<OrderCancellation>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a get request to place an order
     /// https://bitso.com/api_info#place-an-order
     pub async fn place_order(
         &self,
