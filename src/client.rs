@@ -686,5 +686,39 @@ impl Bitso {
         ).await?;
         self.convert_result::<OrderCancellation>(&result)
     }
+
+    /// Make a get request to get fees
+    /// https://bitso.com/api_info#place-an-order
+    pub async fn place_order(
+        &self,
+        book: &str,
+        side: &str,
+        r#type: &str,
+    ) -> Result<PlaceOrder, failure::Error> {
+        let url = String::from("/v3/orders/");
+        let mut params = HashMap::new();
+        params.insert("book".to_owned(), book.to_string());
+        params.insert("side".to_owned(), side.to_string());
+        params.insert("type".to_owned(), r#type.to_string());
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.delete(
+            &url,
+            &mut params,
+            ApiType::Private
+        ).await?;
+        self.convert_result::<PlaceOrder>(&result)
+    }
 }
 

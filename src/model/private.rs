@@ -238,3 +238,14 @@ pub struct OrderCancellation {
     pub success: bool,
     pub payload: Vec<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PlaceOrder {
+    pub success: bool,
+    pub payload: PlaceOrderPayload,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PlaceOrderPayload {
+    oid: String,
+}

@@ -365,3 +365,41 @@ async fn test_cancel_order_unsuccessful() {
     assert!(result.is_err());
     println!("{:?}", result);
 }
+
+/// Test successful request to place_order
+#[tokio::test]
+#[serial]
+async fn test_place_order_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.place_order(
+        "book",
+        "side",
+        "type"
+    ).await;
+    assert!(result.is_err()); // Bad request
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to get lookup_orders
+#[tokio::test]
+#[serial]
+async fn test_place_order_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.place_order(
+        "book",
+        "side",
+        "type"
+    ).await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}
