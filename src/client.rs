@@ -217,10 +217,8 @@ impl Bitso {
             if let ApiType::Private = api_type {
                 builder = builder.headers(headers);
             }
-            let builder = if let Some(json) = payload {
-                builder.json(json)
-            } else {
-                builder
+            if let Some(json) = payload {
+                builder = builder.json(json);
             };
             builder.send().await?
         };
@@ -261,6 +259,21 @@ impl Bitso {
         } else {
             self.internal_call(Method::GET, url, None, api_type).await
         }
+    }
+
+    ///send post request
+    async fn post(
+        &self,
+        url: &str,
+        payload: &Value,
+        api_type: ApiType,
+    ) -> Result<String, failure::Error> {
+        self.internal_call(
+            Method::POST,
+            url,
+            Some(payload),
+            api_type
+        ).await
     }
 
     /// Function to make delete requests
@@ -694,12 +707,15 @@ impl Bitso {
         book: &str,
         side: &str,
         r#type: &str,
+        major: Option<&str>,
     ) -> Result<PlaceOrder, failure::Error> {
         let url = String::from("/v3/orders/");
-        let mut params = HashMap::new();
-        params.insert("book".to_owned(), book.to_string());
-        params.insert("side".to_owned(), side.to_string());
-        params.insert("type".to_owned(), r#type.to_string());
+        let params = json!({
+            "book": book,
+            "side": side,
+            "type": r#type,
+            "major": major
+        });
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
@@ -713,9 +729,9 @@ impl Bitso {
                     failure::err_msg(EMPTY_CREDENTIALS_MSG)
                     ),
         }
-        let result = self.delete(
+        let result = self.post(
             &url,
-            &mut params,
+            &params,
             ApiType::Private
         ).await?;
         self.convert_result::<PlaceOrder>(&result)

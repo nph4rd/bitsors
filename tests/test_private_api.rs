@@ -380,9 +380,10 @@ async fn test_place_order_successful() {
         )
         .build();
     let result = bitso.place_order(
-        "book",
-        "side",
-        "type"
+        "btc_mxn",
+        "buy",
+        "market",
+        Some("0.01"), // major
     ).await;
     assert!(result.is_err()); // Bad request
     println!("{:?}", result);
@@ -396,9 +397,10 @@ async fn test_place_order_unsuccessful() {
         .prefix("https://api-dev.bitso.com")
         .build();
     let result = bitso.place_order(
-        "book",
-        "side",
-        "type"
+        "btc_mxn",
+        "buy",
+        "market",
+        Some("0.01"), // major
     ).await;
     assert!(result.is_err());
     println!("{:?}", result);

@@ -2,7 +2,7 @@ extern crate openssl;
 extern crate hex;
 extern crate reqwest;
 extern crate serde;
-// #[macro_use]
+#[macro_use]
 extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
