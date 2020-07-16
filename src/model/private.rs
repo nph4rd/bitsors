@@ -199,7 +199,7 @@ pub struct OrderTradesPayload {
     price: String,
     tid: String,
     oid: String,
-    client_id: String,
+    client_id: Option<String>,
     side: String,
 }
 
@@ -235,11 +235,11 @@ pub struct LookupOrders {
 pub struct LookupOrdersPayload {
     book: String,
     original_amount: String,
-    unfilled_amount: String,
-    original_value: String,
+    unfilled_amount: u16,
+    original_value: Option<String>,
     created_at: String,
     updated_at: String,
-    price: String,
+    price: Option<String>,
     oid: String,
     side: String,
     status: String,

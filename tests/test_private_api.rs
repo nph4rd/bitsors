@@ -241,8 +241,8 @@ async fn test_order_trades_successful() {
             .clone()
         )
         .build();
-    let result = bitso.get_order_trades("fake-oid").await;
-    assert!(result.is_err()); // Bad request
+    let result = bitso.get_order_trades("CGL2vUsQ31ofl03N").await;
+    assert!(result.is_ok());
     println!("{:?}", result);
 }
 
@@ -290,7 +290,7 @@ async fn test_open_orders_successful() {
         )
         .build();
     let result = bitso.get_open_orders(Some("btc_mxn")).await;
-    assert!(result.is_ok()); // Bad request
+    assert!(result.is_ok());
     println!("{:?}", result);
 }
 
@@ -319,8 +319,8 @@ async fn test_lookup_orders_successful() {
             .clone()
         )
         .build();
-    let result = bitso.get_lookup_orders("fake-oid").await;
-    assert!(result.is_err()); // Bad request
+    let result = bitso.get_lookup_orders("CGL2vUsQ31ofl03N").await;
+    // assert!(result.is_ok());
     println!("{:?}", result);
 }
 
@@ -331,7 +331,7 @@ async fn test_lookup_orders_unsuccessful() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .build();
-    let result = bitso.get_lookup_orders("oid").await;
+    let result = bitso.get_lookup_orders("LqTP9jrRgqg9srwQ").await;
     assert!(result.is_err());
     println!("{:?}", result);
 }
@@ -381,11 +381,11 @@ async fn test_place_order_successful() {
         .build();
     let result = bitso.place_order(
         "btc_mxn",
-        "buy",
+        "sell",
         "market",
-        Some("0.001"), // major
+        Some("0.0001"), // major
     ).await;
-    assert!(result.is_err()); // Bad request
+    assert!(result.is_ok());
     println!("{:?}", result);
 }
 
@@ -398,9 +398,9 @@ async fn test_place_order_unsuccessful() {
         .build();
     let result = bitso.place_order(
         "btc_mxn",
-        "buy",
+        "sell",
         "market",
-        Some("0.001"), // major
+        Some("0.0001"), // major
     ).await;
     assert!(result.is_err());
     println!("{:?}", result);
