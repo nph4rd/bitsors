@@ -267,7 +267,7 @@ impl Bitso {
     /// Function to make get requests
     async fn get(
         &self,
-        url:&str,
+        url: &str,
         params: &mut HashMap<String, String>,
         api_type: ApiType,
     ) -> Result<String, failure::Error> {
