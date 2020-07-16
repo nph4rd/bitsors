@@ -44,7 +44,8 @@ pub enum ApiError {
     #[serde(alias = "error")]
     RegularError {
         success: bool,
-        error: String,
+        code: String,
+        message: String,
     },
     Other(u16),
 }
@@ -53,12 +54,16 @@ impl failure::Fail for ApiError {}
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ApiError::RegularError { success, error } => {
+            ApiError::RegularError {
+                success: _,
+                code,
+                message
+            } => {
                 write!(
                     f,
                     "Bitso API error code {}: {}",
-                    success,
-                    error
+                    code,
+                    message
                 )
             },
             ApiError::Other(s) => {
@@ -71,14 +76,34 @@ impl fmt::Display for ApiError {
         }
     }
 }
+
+#[derive(Debug, Deserialize)]
+pub struct RegularError {
+    pub success: bool,
+    pub error: ErrorDetails,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ErrorDetails {
+    code: String,
+    message: String,
+}
+
 impl ApiError {
     async fn from_response(
         response: reqwest::Response
     ) -> Self {
         match response.status() {
-            StatusCode::BAD_REQUEST => ApiError::RegularError{
-                success: false,
-                error: String::from("Bad request")
+            StatusCode::BAD_REQUEST => {
+                let error = response
+                    .json::<RegularError>()
+                    .await
+                    .unwrap();
+                ApiError::RegularError{
+                    success: error.success,
+                    code: error.error.code,
+                    message: error.error.message,
+                }
             },
             status => ApiError::Other(status.as_u16()),
         }
