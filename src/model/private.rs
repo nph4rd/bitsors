@@ -7,22 +7,22 @@ pub struct AccountStatus {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AccountStatusPayload {
-    client_id: String,
-    first_name: String,
-    last_name: String,
-    status: String,
-    daily_limit: String,
-    daily_remaining: String,
-    monthly_limit: String,
-    monthly_remaining: String,
-    cash_deposit_allowance: String,
-    cellphone_number: String,
-    cellphone_number_stored: String,
-    email_stored: String,
-    official_id: String,
-    proof_of_residency: String,
-    signed_contract: String,
-    origin_of_funds: String,
+    client_id: Option<String>,
+    first_name: Option<String>,
+    last_name: Option<String>,
+    status: Option<String>,
+    daily_limit: Option<String>,
+    daily_remaining: Option<String>,
+    monthly_limit: Option<String>,
+    monthly_remaining: Option<String>,
+    cash_deposit_allowance: Option<String>,
+    cellphone_number: Option<String>,
+    cellphone_number_stored: Option<String>,
+    email_stored: Option<String>,
+    official_id: Option<String>,
+    proof_of_residency: Option<String>,
+    signed_contract: Option<String>,
+    origin_of_funds: Option<String>,
 }
 
 /// From: https://bitso.com/api_info#account-balance
@@ -39,12 +39,12 @@ pub struct Balances {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AccountBalanceInstance {
-    currency: String,
-    available: String,
-    locked: String,
-    total: String,
-    pending_deposit: String,
-    pending_withdrawal: String,
+    currency: Option<String>,
+    available: Option<String>,
+    locked: Option<String>,
+    total: Option<String>,
+    pending_deposit: Option<String>,
+    pending_withdrawal: Option<String>,
 }
 
 /// From: https://bitso.com/api_info#account-balance
@@ -62,17 +62,17 @@ pub struct FeesPayload {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BookFee {
-    book: String,
-    taker_fee_decimal: String,
-    taker_fee_percent: String,
-    maker_fee_decimal: String,
-    maker_fee_percent: String,
+    book: Option<String>,
+    taker_fee_decimal: Option<String>,
+    taker_fee_percent: Option<String>,
+    maker_fee_decimal: Option<String>,
+    maker_fee_percent: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WithdrawalFees {
-    btc: String,
-    eth: String,
+    btc: Option<String>,
+    eth: Option<String>,
 }
 
 
@@ -84,17 +84,17 @@ pub struct Ledger {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LedgerInstance {
-    eid: String,
-    operation: String,
-    created_at: String,
+    eid: Option<String>,
+    operation: Option<String>,
+    created_at: Option<String>,
     balance_updates: Vec<BalanceUpdate>,
     details: BalanceDetails,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BalanceUpdate {
-    currency: String,
-    amount: String,
+    currency: Option<String>,
+    amount: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -116,19 +116,19 @@ pub struct Withdrawals {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WithdrawalsPayload {
-    wid: String,
-    status: String,
-    created_at: String,
-    currency: String,
-    method: String,
-    amount: String,
+    wid: Option<String>,
+    status: Option<String>,
+    created_at: Option<String>,
+    currency: Option<String>,
+    method: Option<String>,
+    amount: Option<String>,
     details: WithdrawalDetails,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WithdrawalDetails {
-    withdrawal_address: String,
-    tx_hash: String,
+    withdrawal_address: Option<String>,
+    tx_hash: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -139,12 +139,12 @@ pub struct Fundings {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FundingsPayload {
-    fid: String,
-    status: String,
-    created_at: String,
-    currency: String,
-    method: String,
-    amount: String,
+    fid: Option<String>,
+    status: Option<String>,
+    created_at: Option<String>,
+    currency: Option<String>,
+    method: Option<String>,
+    amount: Option<String>,
     details: FundingDetails,
 }
 
@@ -170,16 +170,16 @@ pub struct UserTrades {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UserTradesPayload {
-    book: String,
-    major: String,
-    created_at: String,
-    minor: String,
-    fees_amount: String,
-    fees_currency: String,
-    price: String,
-    tid: String,
-    oid: String,
-    side: String,
+    book: Option<String>,
+    major: Option<String>,
+    created_at: Option<String>,
+    minor: Option<String>,
+    fees_amount: Option<String>,
+    fees_currency: Option<String>,
+    price: Option<String>,
+    tid: Option<String>,
+    oid: Option<String>,
+    side: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -190,17 +190,17 @@ pub struct OrderTrades {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OrderTradesPayload {
-    book: String,
-    major: String,
-    created_at: String,
-    minor: String,
-    fees_amount: String,
-    fees_currency: String,
-    price: String,
-    tid: String,
-    oid: String,
+    book: Option<String>,
+    major: Option<String>,
+    created_at: Option<String>,
+    minor: Option<String>,
+    fees_amount: Option<String>,
+    fees_currency: Option<String>,
+    price: Option<String>,
+    tid: Option<String>,
+    oid: Option<String>,
     client_id: Option<String>,
-    side: String,
+    side: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -211,18 +211,18 @@ pub struct OpenOrders {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OpenOrdersPayload {
-    book: String,
-    original_amount: String,
-    unfilled_amount: String,
-    original_value: String,
-    created_at: String,
-    updated_at: String,
-    price: String,
-    oid: String,
-    client_id: String,
-    side: String,
-    status: String,
-    r#type: String,
+    book: Option<String>,
+    original_amount: Option<String>,
+    unfilled_amount: Option<String>,
+    original_value: Option<String>,
+    created_at: Option<String>,
+    updated_at: Option<String>,
+    price: Option<String>,
+    oid: Option<String>,
+    client_id: Option<String>,
+    side: Option<String>,
+    status: Option<String>,
+    r#type: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -233,17 +233,17 @@ pub struct LookupOrders {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LookupOrdersPayload {
-    book: String,
-    original_amount: String,
-    unfilled_amount: u16,
+    book: Option<String>,
+    original_amount: Option<String>,
+    unfilled_amount: Option<u64>,
     original_value: Option<String>,
-    created_at: String,
-    updated_at: String,
+    created_at: Option<String>,
+    updated_at: Option<String>,
     price: Option<String>,
-    oid: String,
-    side: String,
-    status: String,
-    r#type: String,
+    oid: Option<String>,
+    side: Option<String>,
+    status: Option<String>,
+    r#type: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -260,5 +260,5 @@ pub struct PlaceOrder {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PlaceOrderPayload {
-    oid: String,
+    oid: Option<String>,
 }

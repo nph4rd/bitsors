@@ -7,13 +7,13 @@ pub struct AvailableBooks {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AvailableBook {
-    book: String,
-    minimum_amount: String,
-    maximum_amount: String,
-    minimum_price: String,
-    maximum_price: String,
-    minimum_value: String,
-    maximum_value: String,
+    book: Option<String>,
+    minimum_amount: Option<String>,
+    maximum_amount: Option<String>,
+    minimum_price: Option<String>,
+    maximum_price: Option<String>,
+    minimum_value: Option<String>,
+    maximum_value: Option<String>,
 }
 
 /// From: https://bitso.com/api_info#ticker
@@ -25,15 +25,15 @@ pub struct Ticker {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BookTicker {
-    book: String,
-    volume: String,
-    high: String,
-    last: String,
-    low: String,
-    vwap: String,
-    ask: String,
-    bid: String,
-    created_at: String,
+    book: Option<String>,
+    volume: Option<String>,
+    high: Option<String>,
+    last: Option<String>,
+    low: Option<String>,
+    vwap: Option<String>,
+    ask: Option<String>,
+    bid: Option<String>,
+    created_at: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -46,22 +46,22 @@ pub struct OrderBook {
 pub struct OrderBookPayload {
     asks: Vec<Ask>,
     bids: Vec<Bid>,
-    updated_at: String,
-    sequence: String,
+    updated_at: Option<String>,
+    sequence: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ask {
-    book: String,
-    price: String,
-    amount: String,
+    book: Option<String>,
+    price: Option<String>,
+    amount: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Bid {
-    book: String,
-    price: String,
-    amount: String,
+    book: Option<String>,
+    price: Option<String>,
+    amount: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -73,10 +73,10 @@ pub struct Trades {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Trade {
-    book: String,
-    created_at: String,
-    amount: String,
-    maker_side: String,
-    price: String,
-    tid: u64,
+    book: Option<String>,
+    created_at: Option<String>,
+    amount: Option<String>,
+    maker_side: Option<String>,
+    price: Option<String>,
+    tid: Option<u64>,
 }
