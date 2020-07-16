@@ -16,6 +16,7 @@ use std::borrow::Cow;
 use std::fmt;
 use super::model::public::*;
 use super::model::private::*;
+use super::model::JSONResponse;
 
 lazy_static! {
     /// HTTP Client
@@ -345,14 +346,14 @@ impl Bitso {
     /// https://bitso.com/api_info/#available-books
     pub async fn get_available_books(
         &self
-    ) -> Result<AvailableBooks, failure::Error> {
+    ) -> Result<JSONResponse<Vec<AvailableBook>>, failure::Error> {
         let url = String::from("/v3/available_books/");
         let result = self.get(
             &url,
             &mut HashMap::new(),
             ApiType::Public
         ).await?;
-        self.convert_result::<AvailableBooks>(&result)
+        self.convert_result::<JSONResponse<Vec<AvailableBook>>>(&result)
     }
 
     /// Make a get request to pull ticker
@@ -360,7 +361,7 @@ impl Bitso {
     pub async fn get_ticker(
         &self,
         book: Option<&str>,
-    ) -> Result<Ticker, failure::Error> {
+    ) -> Result<JSONResponse<BookTicker>, failure::Error> {
         let mut params = HashMap::new();
         if let Some(_book) = book {
             params.insert("book".to_owned(), _book.to_string());
@@ -371,7 +372,7 @@ impl Bitso {
             &mut params,
             ApiType::Public
         ).await?;
-        self.convert_result::<Ticker>(&result)
+        self.convert_result::<JSONResponse<BookTicker>>(&result)
     }
 
     /// Make a get request to pull a specific order book
@@ -379,7 +380,7 @@ impl Bitso {
     pub async fn get_order_book(
         &self,
         book: Option<&str>,
-    ) -> Result<OrderBook, failure::Error> {
+    ) -> Result<JSONResponse<OrderBookPayload>, failure::Error> {
         let mut params = HashMap::new();
         if let Some(_book) = book {
             params.insert("book".to_owned(), _book.to_string());
@@ -390,7 +391,7 @@ impl Bitso {
             &mut params,
             ApiType::Public
         ).await?;
-        self.convert_result::<OrderBook>(&result)
+        self.convert_result::<JSONResponse<OrderBookPayload>>(&result)
     }
 
     /// Make a get request to pull a specific trade
@@ -398,7 +399,7 @@ impl Bitso {
     pub async fn get_trades(
         &self,
         book: Option<&str>,
-    ) -> Result<Trades, failure::Error> {
+    ) -> Result<JSONResponse<Vec<Trade>>, failure::Error> {
         let mut params = HashMap::new();
         if let Some(_book) = book {
             params.insert("book".to_owned(), _book.to_string());
@@ -409,7 +410,7 @@ impl Bitso {
             &mut params,
             ApiType::Public
         ).await?;
-        self.convert_result::<Trades>(&result)
+        self.convert_result::<JSONResponse<Vec<Trade>>>(&result)
     }
 
 
@@ -421,7 +422,7 @@ impl Bitso {
     /// https://bitso.com/api_info#account-status
     pub async fn get_account_status(
         &self,
-    ) -> Result<AccountStatus, failure::Error> {
+    ) -> Result<JSONResponse<AccountStatusPayload>, failure::Error> {
         let url = String::from("/v3/account_status/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -441,14 +442,14 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<AccountStatus>(&result)
+        self.convert_result::<JSONResponse<AccountStatusPayload>>(&result)
     }
 
     /// Make a get request to get account balance
     /// https://bitso.com/api_info#account-balance
     pub async fn get_account_balance(
         &self,
-    ) -> Result<AccountBalance, failure::Error> {
+    ) -> Result<JSONResponse<Balances>, failure::Error> {
         let url = String::from("/v3/balance/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -468,14 +469,14 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<AccountBalance>(&result)
+        self.convert_result::<JSONResponse<Balances>>(&result)
     }
 
     /// Make a get request to get fees
     /// https://bitso.com/api_info#fees
     pub async fn get_fees(
         &self,
-    ) -> Result<Fees, failure::Error> {
+    ) -> Result<JSONResponse<FeesPayload>, failure::Error> {
         let url = String::from("/v3/fees/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -495,14 +496,14 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<Fees>(&result)
+        self.convert_result::<JSONResponse<FeesPayload>>(&result)
     }
 
     /// Make a get request to get ledger
     /// https://bitso.com/api_info#ledger
     pub async fn get_ledger(
         &self,
-    ) -> Result<Ledger, failure::Error> {
+    ) -> Result<JSONResponse<Vec<LedgerInstance>>, failure::Error> {
         let url = String::from("/v3/ledger/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -522,14 +523,14 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<Ledger>(&result)
+        self.convert_result::<JSONResponse<Vec<LedgerInstance>>>(&result)
     }
 
     /// Make a get request to get withdrawals
     /// https://bitso.com/api_info#withdrawals
     pub async fn get_withdrawals(
         &self,
-    ) -> Result<Withdrawals, failure::Error> {
+    ) -> Result<JSONResponse<Vec<WithdrawalsPayload>>, failure::Error> {
         let url = String::from("/v3/withdrawals/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -549,14 +550,14 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<Withdrawals>(&result)
+        self.convert_result::<JSONResponse<Vec<WithdrawalsPayload>>>(&result)
     }
 
     /// Make a get request to get fundings
     /// https://bitso.com/api_info#fundings
     pub async fn get_fundings(
         &self,
-    ) -> Result<Fundings, failure::Error> {
+    ) -> Result<JSONResponse<Vec<FundingsPayload>>, failure::Error> {
         let url = String::from("/v3/fundings/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -576,14 +577,14 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<Fundings>(&result)
+        self.convert_result::<JSONResponse<Vec<FundingsPayload>>>(&result)
     }
 
     /// Make a get request to get user trades
     /// https://bitso.com/api_info#user-trades
     pub async fn get_user_trades(
         &self,
-    ) -> Result<UserTrades, failure::Error> {
+    ) -> Result<JSONResponse<Vec<UserTradesPayload>>, failure::Error> {
         let url = String::from("/v3/user_trades/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -603,7 +604,7 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<UserTrades>(&result)
+        self.convert_result::<JSONResponse<Vec<UserTradesPayload>>>(&result)
     }
 
     /// Make a get request to get order trades
@@ -611,7 +612,7 @@ impl Bitso {
     pub async fn get_order_trades(
         &self,
         oid: &str,
-    ) -> Result<OrderTrades, failure::Error> {
+    ) -> Result<JSONResponse<Vec<OrderTradesPayload>>, failure::Error> {
         let url = format!("/v3/order_trades/{}/", oid.to_owned());
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -631,7 +632,7 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<OrderTrades>(&result)
+        self.convert_result::<JSONResponse<Vec<OrderTradesPayload>>>(&result)
     }
 
     /// Make a get request to get open orders
@@ -639,7 +640,7 @@ impl Bitso {
     pub async fn get_open_orders(
         &self,
         book: Option<&str>,
-    ) -> Result<OpenOrders, failure::Error> {
+    ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>, failure::Error> {
         let mut url = String::from("/v3/open_orders");
         if let Some(_book) = book {
             url = format!(
@@ -666,7 +667,7 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<OpenOrders>(&result)
+        self.convert_result::<JSONResponse<Vec<OpenOrdersPayload>>>(&result)
     }
 
     /// Make a get request to get lookup orders
@@ -674,7 +675,7 @@ impl Bitso {
     pub async fn get_lookup_orders(
         &self,
         oid: &str,
-    ) -> Result<LookupOrders, failure::Error> {
+    ) -> Result<JSONResponse<Vec<LookupOrdersPayload>>, failure::Error> {
         let url = format!("/v3/orders/{}/", oid.to_owned());
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -694,7 +695,7 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<LookupOrders>(&result)
+        self.convert_result::<JSONResponse<Vec<LookupOrdersPayload>>>(&result)
     }
 
     /// Make a get request to cancel order
@@ -702,7 +703,7 @@ impl Bitso {
     pub async fn cancel_order(
         &self,
         oid: &str,
-    ) -> Result<OrderCancellation, failure::Error> {
+    ) -> Result<JSONResponse<Vec<String>>, failure::Error> {
         let url = format!("/v3/orders/{}/", oid.to_owned());
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -722,7 +723,7 @@ impl Bitso {
             &mut HashMap::new(),
             ApiType::Private
         ).await?;
-        self.convert_result::<OrderCancellation>(&result)
+        self.convert_result::<JSONResponse<Vec<String>>>(&result)
     }
 
     /// Make a get request to place an order
@@ -733,7 +734,7 @@ impl Bitso {
         side: &str,
         r#type: &str,
         major: Option<&str>,
-    ) -> Result<PlaceOrder, failure::Error> {
+    ) -> Result<JSONResponse<PlaceOrderPayload>, failure::Error> {
         let url = String::from("/v3/orders/");
         let params = json!({
             "book": book,
@@ -759,7 +760,7 @@ impl Bitso {
             &params,
             ApiType::Private
         ).await?;
-        self.convert_result::<PlaceOrder>(&result)
+        self.convert_result::<JSONResponse<PlaceOrderPayload>>(&result)
     }
 }
 

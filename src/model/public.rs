@@ -1,11 +1,5 @@
 /// From: https://bitso.com/api_info#available-books
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AvailableBooks {
-    pub success: bool,
-    pub payload: Vec<AvailableBook>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AvailableBook {
     book: Option<String>,
     minimum_amount: Option<String>,
@@ -14,13 +8,6 @@ pub struct AvailableBook {
     maximum_price: Option<String>,
     minimum_value: Option<String>,
     maximum_value: Option<String>,
-}
-
-/// From: https://bitso.com/api_info#ticker
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Ticker {
-    pub success: bool,
-    pub payload: BookTicker,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -34,12 +21,6 @@ pub struct BookTicker {
     ask: Option<String>,
     bid: Option<String>,
     created_at: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct OrderBook {
-    pub success: bool,
-    pub payload: OrderBookPayload,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -63,13 +44,6 @@ pub struct Bid {
     price: Option<String>,
     amount: Option<String>,
 }
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Trades {
-    pub success: bool,
-    pub payload: Vec<Trade>,
-}
-
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Trade {

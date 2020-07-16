@@ -1,10 +1,3 @@
-
-/// From: https://bitso.com/api_info#account-status
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AccountStatus {
-    pub success: bool,
-    pub payload: AccountStatusPayload,
-}
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AccountStatusPayload {
     client_id: Option<String>,
@@ -47,13 +40,6 @@ pub struct AccountBalanceInstance {
     pending_withdrawal: Option<String>,
 }
 
-/// From: https://bitso.com/api_info#account-balance
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Fees {
-    pub success: bool,
-    pub payload: FeesPayload,
-}
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FeesPayload {
     fees: Vec<BookFee>,
@@ -73,13 +59,6 @@ pub struct BookFee {
 pub struct WithdrawalFees {
     btc: Option<String>,
     eth: Option<String>,
-}
-
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Ledger {
-    pub success: bool,
-    pub payload: Vec<LedgerInstance>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -109,12 +88,6 @@ pub struct BalanceDetails {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Withdrawals {
-    pub success: bool,
-    pub payload: Vec<WithdrawalsPayload>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WithdrawalsPayload {
     wid: Option<String>,
     status: Option<String>,
@@ -129,12 +102,6 @@ pub struct WithdrawalsPayload {
 pub struct WithdrawalDetails {
     withdrawal_address: Option<String>,
     tx_hash: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Fundings {
-    pub success: bool,
-    pub payload: Vec<FundingsPayload>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -163,12 +130,6 @@ pub struct FundingDetails {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct UserTrades {
-    success: bool,
-    payload: Vec<UserTradesPayload>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UserTradesPayload {
     book: Option<String>,
     major: Option<String>,
@@ -180,12 +141,6 @@ pub struct UserTradesPayload {
     tid: Option<String>,
     oid: Option<String>,
     side: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct OrderTrades {
-    success: bool,
-    payload: Vec<OrderTradesPayload>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -201,12 +156,6 @@ pub struct OrderTradesPayload {
     oid: Option<String>,
     client_id: Option<String>,
     side: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct OpenOrders {
-    pub success: bool,
-    pub payload: Vec<OpenOrdersPayload>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -226,12 +175,6 @@ pub struct OpenOrdersPayload {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct LookupOrders {
-    pub success: bool,
-    pub payload: Vec<LookupOrdersPayload>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LookupOrdersPayload {
     book: Option<String>,
     original_amount: Option<String>,
@@ -244,18 +187,6 @@ pub struct LookupOrdersPayload {
     side: Option<String>,
     status: Option<String>,
     r#type: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct OrderCancellation {
-    pub success: bool,
-    pub payload: Vec<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct PlaceOrder {
-    pub success: bool,
-    pub payload: PlaceOrderPayload,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
