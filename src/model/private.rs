@@ -199,3 +199,20 @@ pub struct FundingDestination {
     pub account_identifier_name: Option<String>,
     pub account_identifier: Option<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Withdrawal {
+    pub wid: Option<String>,
+    pub status: Option<String>,
+    pub created_at: Option<String>,
+    pub currency: Option<String>,
+    pub method: Option<String>,
+    pub amount: Option<String>,
+    pub details: WithdrawalRequestDetails,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct WithdrawalRequestDetails {
+    withdrawal_address: Option<String>,
+    tx_hash: Option<String>,
+}
