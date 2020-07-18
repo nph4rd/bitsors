@@ -439,3 +439,27 @@ async fn test_funding_destination_unsuccessful() {
     assert!(result.is_err());
     println!("{:?}", result);
 }
+
+/// Test successful request to make a crypto withdrawal
+#[tokio::test]
+#[serial]
+async fn test_crypto_withdrawal_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.withdrawal(
+        "btc",
+        "0.001",
+        "3EW92Ajg6sMT4hxK8ngEc7Ehrqkr9RoDt7",
+	Some("0.001"),
+        Some("some_tag"),
+    ).await;
+    // assert!(result.is_err());
+    println!("{:?}", result);
+}
