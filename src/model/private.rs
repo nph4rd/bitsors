@@ -193,3 +193,9 @@ pub struct LookupOrdersPayload {
 pub struct PlaceOrderPayload {
     oid: Option<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FundingDestination {
+    pub account_identifier_name: Option<String>,
+    pub account_identifier: Option<String>,
+}
