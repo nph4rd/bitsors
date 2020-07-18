@@ -792,5 +792,44 @@ impl Bitso {
         ).await?;
         self.convert_result::<JSONResponse<FundingDestination>>(&result)
     }
+
+    /// Make a get request to place an order
+    /// https://bitso.com/api_info#crypto-withdrawals
+    pub async fn withdrawal(
+        &self,
+        currency: &str,
+        amount: &str,
+        address: &str,
+        max_fee: Option<&str>,
+	destination_tag: Option<&str>,
+    ) -> Result<JSONResponse<Withdrawal>, failure::Error> {
+        let url = String::from("/v3/crypto_withdrawal/");
+        let params = json!({
+            "currency": currency,
+            "amount": amount,
+            "address": address,
+            "max_fee": max_fee,
+	    "destination_tag": destination_tag,
+        });
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.post(
+            &url,
+            &params,
+            ApiType::Private
+        ).await?;
+        self.convert_result::<JSONResponse<Withdrawal>>(&result)
+    }
 }
 
