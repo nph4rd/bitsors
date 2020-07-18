@@ -460,6 +460,6 @@ async fn test_crypto_withdrawal_successful() {
 	Some("0.001"),
         Some("some_tag"),
     ).await;
-    // assert!(result.is_err());
+    assert!(result.is_ok());
     println!("{:?}", result);
 }
