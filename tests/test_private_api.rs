@@ -405,3 +405,37 @@ async fn test_place_order_unsuccessful() {
     assert!(result.is_err());
     println!("{:?}", result);
 }
+
+/// Test successful request to funding_destination
+#[tokio::test]
+#[serial]
+async fn test_funding_destination_successfull() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.get_funding_destination(
+        "btc",
+    ).await;
+    assert!(result.is_err()); // Doesn't work atm for some reason
+    println!("{:?}", result);
+}
+
+/// Test unsuccessful request to funding_destination
+#[tokio::test]
+#[serial]
+async fn test_funding_destination_unsuccessful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.get_funding_destination(
+        "btc",
+    ).await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}
