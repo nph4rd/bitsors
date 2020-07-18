@@ -762,5 +762,35 @@ impl Bitso {
         ).await?;
         self.convert_result::<JSONResponse<PlaceOrderPayload>>(&result)
     }
+
+    /// Make a get request to get lookup orders
+    /// https://bitso.com/api_info#funding-destination
+    pub async fn get_funding_destination(
+        &self,
+        fund_currency: &str,
+    ) -> Result<JSONResponse<FundingDestination>, failure::Error> {
+	let url = String::from("/v3/funding_destination/");
+        let mut params = HashMap::new();
+	params.insert("fund_currency".to_owned(), fund_currency.to_string());
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.get(
+            &url,
+            &mut params,
+            ApiType::Private
+        ).await?;
+        self.convert_result::<JSONResponse<FundingDestination>>(&result)
+    }
 }
 
