@@ -453,7 +453,7 @@ async fn test_crypto_withdrawal_successful() {
             .clone()
         )
         .build();
-    let result = bitso.withdrawal(
+    let result = bitso.crypto_withdrawal(
         "btc",
         "0.001",
         "3EW92Ajg6sMT4hxK8ngEc7Ehrqkr9RoDt7",

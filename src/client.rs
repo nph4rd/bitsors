@@ -795,7 +795,7 @@ impl Bitso {
 
     /// Make a get request to place an order
     /// https://bitso.com/api_info#crypto-withdrawals
-    pub async fn withdrawal(
+    pub async fn crypto_withdrawal(
         &self,
         currency: &str,
         amount: &str,
