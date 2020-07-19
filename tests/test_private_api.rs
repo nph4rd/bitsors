@@ -18,6 +18,19 @@ lazy_static! {
 /// *** PRIVATE API *** ///
 
 
+/// Test unsuccessful request due to empty credentials
+#[tokio::test]
+#[serial]
+async fn test_empty_credentials() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .build();
+    let result = bitso.get_account_status().await;
+    assert!(result.is_err()); // Empty credentials
+    println!("{:?}", result);
+}
+
+
 /// Test successful request to get account status
 #[tokio::test]
 #[serial]
@@ -36,17 +49,6 @@ async fn test_account_status_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get account status
-#[tokio::test]
-#[serial]
-async fn test_account_status_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_account_status().await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
 
 /// Test successful request to get account balance
 #[tokio::test]
@@ -63,18 +65,6 @@ async fn test_account_balance_successful() {
         .build();
     let result = bitso.get_account_balance().await;
     assert!(result.is_ok());
-    println!("{:?}", result);
-}
-
-/// Test unsuccessful request to get account balance
-#[tokio::test]
-#[serial]
-async fn test_account_balance_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_account_balance().await;
-    assert!(result.is_err());
     println!("{:?}", result);
 }
 
@@ -96,18 +86,6 @@ async fn test_fees_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get fees
-#[tokio::test]
-#[serial]
-async fn test_fees_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_fees().await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
-
 /// Test successful request to get ledger
 #[tokio::test]
 #[serial]
@@ -123,18 +101,6 @@ async fn test_ledger_successful() {
         .build();
     let result = bitso.get_ledger().await;
     // assert!(result.is_ok());
-    println!("{:?}", result);
-}
-
-/// Test unsuccessful request to get ledger
-#[tokio::test]
-#[serial]
-async fn test_ledger_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_ledger().await;
-    assert!(result.is_err());
     println!("{:?}", result);
 }
 
@@ -156,18 +122,6 @@ async fn test_withdrawals_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get withdrawals
-#[tokio::test]
-#[serial]
-async fn test_withdrawals_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_withdrawals().await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
-
 /// Test successful request to get fundings
 #[tokio::test]
 #[serial]
@@ -183,18 +137,6 @@ async fn test_fundings_successful() {
         .build();
     let result = bitso.get_fundings().await;
     assert!(result.is_ok());
-    println!("{:?}", result);
-}
-
-/// Test unsuccessful request to get fundings
-#[tokio::test]
-#[serial]
-async fn test_fundings_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_fundings().await;
-    assert!(result.is_err());
     println!("{:?}", result);
 }
 
@@ -216,18 +158,6 @@ async fn test_user_trades_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get user_trades
-#[tokio::test]
-#[serial]
-async fn test_user_trades_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_user_trades().await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
-
 /// Test successful request to get order_trades
 #[tokio::test]
 #[serial]
@@ -243,18 +173,6 @@ async fn test_order_trades_successful() {
         .build();
     let result = bitso.get_order_trades("CGL2vUsQ31ofl03N").await;
     assert!(result.is_ok());
-    println!("{:?}", result);
-}
-
-/// Test unsuccessful request to get order_trades
-#[tokio::test]
-#[serial]
-async fn test_order_trades_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_order_trades("oid").await;
-    assert!(result.is_err());
     println!("{:?}", result);
 }
 
@@ -294,18 +212,6 @@ async fn test_open_orders_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get open_orders
-#[tokio::test]
-#[serial]
-async fn test_open_orders_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_open_orders(None).await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
-
 /// Test successful request to get lookup_orders
 #[tokio::test]
 #[serial]
@@ -324,18 +230,6 @@ async fn test_lookup_orders_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get lookup_orders
-#[tokio::test]
-#[serial]
-async fn test_lookup_orders_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_lookup_orders("LqTP9jrRgqg9srwQ").await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
-
 /// Test successful request to cancel_order
 #[tokio::test]
 #[serial]
@@ -351,18 +245,6 @@ async fn test_cancel_order_successful() {
         .build();
     let result = bitso.cancel_order("fake-oid").await;
     assert!(result.is_ok());
-    println!("{:?}", result);
-}
-
-/// Test unsuccessful request to get lookup_orders
-#[tokio::test]
-#[serial]
-async fn test_cancel_order_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.cancel_order("oid").await;
-    assert!(result.is_err());
     println!("{:?}", result);
 }
 
@@ -389,23 +271,6 @@ async fn test_place_order_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get lookup_orders
-#[tokio::test]
-#[serial]
-async fn test_place_order_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.place_order(
-        "btc_mxn",
-        "sell",
-        "market",
-        Some("0.0001"), // major
-    ).await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
-
 /// Test successful request to funding_destination
 #[tokio::test]
 #[serial]
@@ -423,20 +288,6 @@ async fn test_funding_destination_successfull() {
         "btc",
     ).await;
     assert!(result.is_err()); // Doesn't work atm for some reason
-    println!("{:?}", result);
-}
-
-/// Test unsuccessful request to funding_destination
-#[tokio::test]
-#[serial]
-async fn test_funding_destination_unsuccessful() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
-    let result = bitso.get_funding_destination(
-        "btc",
-    ).await;
-    assert!(result.is_err());
     println!("{:?}", result);
 }
 
