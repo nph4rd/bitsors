@@ -938,5 +938,44 @@ impl Bitso {
         ).await?;
         self.convert_result::<JSONResponse<Withdrawal<DebitWithdrawal>>>(&result)
     }
+
+    /// Make a post request to make a phone-number withdrawal
+    /// https://bitso.com/api_info#phone-number-withdrawal
+    pub async fn phone_number_withdrawal(
+        &self,
+        amount: &str,
+        recipient_given_names: &str,
+        recipient_family_names: &str,
+        phone_number: &str,
+        bank_code: &str,
+    ) -> Result<JSONResponse<Withdrawal<PhoneWithdrawal>>, failure::Error> {
+        let url = String::from("/v3/phone_withdrawal/");
+        let params = json!({
+            "amount": amount,
+            "recipient_given_names": recipient_given_names,
+            "recipient_family_names": recipient_family_names,
+            "phone_number": phone_number,
+            "bank_code": bank_code
+        });
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.post(
+            &url,
+            &params,
+            ApiType::Private
+        ).await?;
+        self.convert_result::<JSONResponse<Withdrawal<PhoneWithdrawal>>>(&result)
+    }
 }
 
