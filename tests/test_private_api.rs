@@ -457,9 +457,34 @@ async fn test_crypto_withdrawal_successful() {
         "btc",
         "0.001",
         "3EW92Ajg6sMT4hxK8ngEc7Ehrqkr9RoDt7",
-	Some("0.001"),
+        Some("0.001"),
         Some("some_tag"),
     ).await;
     assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to make a SPEI withdrawal
+#[tokio::test]
+#[serial]
+async fn test_spei_withdrawal_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.spei_withdrawal(
+        "200",
+        "alguien alguien",
+        "guien guillen",
+        "012610001967722183",
+        Some("notes_ref"),
+        Some("numeric_red"),
+    ).await;
+    assert!(result.is_err()); // Fails with some transfer limit
     println!("{:?}", result);
 }
