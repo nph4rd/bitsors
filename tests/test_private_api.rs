@@ -488,3 +488,21 @@ async fn test_spei_withdrawal_successful() {
     assert!(result.is_err()); // Fails with some transfer limit
     println!("{:?}", result);
 }
+
+/// Test successful request to get bank codes
+#[tokio::test]
+#[serial]
+async fn test_bank_codes_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.get_bank_codes().await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
