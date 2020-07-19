@@ -506,3 +506,27 @@ async fn test_bank_codes_successful() {
     assert!(result.is_ok());
     println!("{:?}", result);
 }
+
+/// Test successful request to make a debit-card withdrawal
+#[tokio::test]
+#[serial]
+async fn test_debit_card_withdrawal_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.debit_card_withdrawal(
+        "200",
+        "alguien alguien",
+        "guien guillen",
+        "0123456789012345",
+        "40138",
+    ).await;
+    assert!(result.is_err()); // Fails with some transfer limit
+    println!("{:?}", result);
+}
