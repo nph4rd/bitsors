@@ -2,6 +2,16 @@ extern crate bitsors;
 
 use bitsors::client::Bitso;
 
+/// Test unsuccesful request and error parsing
+#[tokio::test]
+async fn test_error_parsing() {
+    let bitso = Bitso::default()
+        .build();
+    let result = bitso.get_ticker(Some("FAKEORDERBOOK")).await;
+    assert!(result.is_err());
+    println!("{:?}", result);
+}
+
 /// Test successful request to get available books
 #[tokio::test]
 async fn test_available_books() {
@@ -14,7 +24,7 @@ async fn test_available_books() {
 
 /// Test successful request to get ticker
 #[tokio::test]
-async fn test_ticker_successful() {
+async fn test_ticker() {
     let bitso = Bitso::default()
         .build();
     let result = bitso.get_ticker(Some("btc_mxn")).await;
@@ -22,19 +32,9 @@ async fn test_ticker_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get ticker
-#[tokio::test]
-async fn test_ticker_unsuccessful() {
-    let bitso = Bitso::default()
-        .build();
-    let result = bitso.get_ticker(Some("CREATEERROR")).await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
-
 /// Test successful request to get order book
 #[tokio::test]
-async fn test_order_book_successful() {
+async fn test_order_book() {
     let bitso = Bitso::default()
         .build();
     let result = bitso.get_order_book(Some("btc_mxn")).await;
@@ -42,33 +42,13 @@ async fn test_order_book_successful() {
     println!("{:?}", result);
 }
 
-/// Test unsuccessful request to get order book
-#[tokio::test]
-async fn test_order_book_unsuccessful() {
-    let bitso = Bitso::default()
-        .build();
-    let result = bitso.get_order_book(Some("CREATEERROR")).await;
-    assert!(result.is_err());
-    println!("{:?}", result);
-}
-
 /// Test successful request to get trades
 #[tokio::test]
-async fn test_trades_successful() {
+async fn test_trades() {
     let bitso = Bitso::default()
         .build();
     let result = bitso.get_trades(Some("btc_mxn")).await;
     assert!(result.is_ok());
-    println!("{:?}", result);
-}
-
-/// Test unsuccessful request to get trades
-#[tokio::test]
-async fn test_trades_unsuccessful() {
-    let bitso = Bitso::default()
-        .build();
-    let result = bitso.get_trades(Some("CREATEERROR")).await;
-    assert!(result.is_err());
     println!("{:?}", result);
 }
 

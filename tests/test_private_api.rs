@@ -34,7 +34,7 @@ async fn test_empty_credentials() {
 /// Test successful request to get account status
 #[tokio::test]
 #[serial]
-async fn test_account_status_successful() {
+async fn test_account_status() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -53,7 +53,7 @@ async fn test_account_status_successful() {
 /// Test successful request to get account balance
 #[tokio::test]
 #[serial]
-async fn test_account_balance_successful() {
+async fn test_account_balance() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -71,7 +71,7 @@ async fn test_account_balance_successful() {
 /// Test successful request to get fees
 #[tokio::test]
 #[serial]
-async fn test_fees_successful() {
+async fn test_fees() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -89,7 +89,7 @@ async fn test_fees_successful() {
 /// Test successful request to get ledger
 #[tokio::test]
 #[serial]
-async fn test_ledger_successful() {
+async fn test_ledger() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -107,7 +107,7 @@ async fn test_ledger_successful() {
 /// Test successful request to get withdrawals
 #[tokio::test]
 #[serial]
-async fn test_withdrawals_successful() {
+async fn test_withdrawals() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -125,7 +125,7 @@ async fn test_withdrawals_successful() {
 /// Test successful request to get fundings
 #[tokio::test]
 #[serial]
-async fn test_fundings_successful() {
+async fn test_fundings() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -143,7 +143,7 @@ async fn test_fundings_successful() {
 /// Test successful request to get user_trades
 #[tokio::test]
 #[serial]
-async fn test_user_trades_successful() {
+async fn test_user_trades() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -161,7 +161,7 @@ async fn test_user_trades_successful() {
 /// Test successful request to get order_trades
 #[tokio::test]
 #[serial]
-async fn test_order_trades_successful() {
+async fn test_order_trades() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -179,25 +179,7 @@ async fn test_order_trades_successful() {
 /// Test successful request to get open_orders
 #[tokio::test]
 #[serial]
-async fn test_open_orders_successful2() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
-        .build();
-    let result = bitso.get_open_orders(None).await;
-    assert!(result.is_ok()); // Bad request
-    println!("{:?}", result);
-}
-
-/// Test successful request to get open_orders
-#[tokio::test]
-#[serial]
-async fn test_open_orders_successful() {
+async fn test_open_orders() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -215,7 +197,7 @@ async fn test_open_orders_successful() {
 /// Test successful request to get lookup_orders
 #[tokio::test]
 #[serial]
-async fn test_lookup_orders_successful() {
+async fn test_lookup_orders() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -233,7 +215,7 @@ async fn test_lookup_orders_successful() {
 /// Test successful request to cancel_order
 #[tokio::test]
 #[serial]
-async fn test_cancel_order_successful() {
+async fn test_cancel_order() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -251,7 +233,7 @@ async fn test_cancel_order_successful() {
 /// Test successful request to place_order
 #[tokio::test]
 #[serial]
-async fn test_place_order_successful() {
+async fn test_place_order() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -274,7 +256,7 @@ async fn test_place_order_successful() {
 /// Test successful request to funding_destination
 #[tokio::test]
 #[serial]
-async fn test_funding_destination_successfull() {
+async fn test_funding_destinationl() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -294,7 +276,7 @@ async fn test_funding_destination_successfull() {
 /// Test successful request to make a crypto withdrawal
 #[tokio::test]
 #[serial]
-async fn test_crypto_withdrawal_successful() {
+async fn test_crypto_withdrawal() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -318,7 +300,7 @@ async fn test_crypto_withdrawal_successful() {
 /// Test successful request to make a SPEI withdrawal
 #[tokio::test]
 #[serial]
-async fn test_spei_withdrawal_successful() {
+async fn test_spei_withdrawal() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -343,7 +325,7 @@ async fn test_spei_withdrawal_successful() {
 /// Test successful request to get bank codes
 #[tokio::test]
 #[serial]
-async fn test_bank_codes_successful() {
+async fn test_bank_codes() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -361,7 +343,7 @@ async fn test_bank_codes_successful() {
 /// Test successful request to make a debit-card withdrawal
 #[tokio::test]
 #[serial]
-async fn test_debit_card_withdrawal_successful() {
+async fn test_debit_card_withdrawal() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
@@ -385,7 +367,7 @@ async fn test_debit_card_withdrawal_successful() {
 /// Test successful request to make a phone-number withdrawal
 #[tokio::test]
 #[serial]
-async fn test_phone_number_withdrawal_successful() {
+async fn test_phone_number_withdrawal() {
     let bitso = Bitso::default()
         .prefix("https://api-dev.bitso.com")
         .client_credentials_manager(
