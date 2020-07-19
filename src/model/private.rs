@@ -240,6 +240,17 @@ pub struct DebitWithdrawal {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PhoneWithdrawal {
+    sender_name: Option<String>,
+    receive_clabe: Option<String>,
+    sender_clabe: Option<String>,
+    numeric_reference: Option<String>,
+    concepto: Option<String>,
+    clave_rastreo: Option<String>,
+    beneficiary_name: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BankCode {
     code: Option<String>,
     name: Option<String>,
