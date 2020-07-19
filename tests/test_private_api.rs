@@ -530,3 +530,27 @@ async fn test_debit_card_withdrawal_successful() {
     assert!(result.is_err()); // Fails with some transfer limit
     println!("{:?}", result);
 }
+
+/// Test successful request to make a phone-number withdrawal
+#[tokio::test]
+#[serial]
+async fn test_phone_number_withdrawal_successful() {
+    let bitso = Bitso::default()
+        .prefix("https://api-dev.bitso.com")
+        .client_credentials_manager(
+            CLIENT_CREDENTIAL
+            .lock()
+            .unwrap()
+            .clone()
+        )
+        .build();
+    let result = bitso.phone_number_withdrawal(
+        "200",
+        "alguien alguien",
+        "guien guillen",
+        "0123456789",
+        "40138",
+    ).await;
+    assert!(result.is_err()); // Fails with some transfer limit
+    println!("{:?}", result);
+}
