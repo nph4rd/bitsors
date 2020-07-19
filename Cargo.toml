@@ -20,3 +20,4 @@ openssl = "0.10.30"
 [dev-dependencies]
 tokio = { version = "0.2", features = ["full"] }
 serial_test = "0.4.0"
+mockito = "0.26.0"
