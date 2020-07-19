@@ -769,9 +769,9 @@ impl Bitso {
         &self,
         fund_currency: &str,
     ) -> Result<JSONResponse<FundingDestination>, failure::Error> {
-	let url = String::from("/v3/funding_destination/");
+        let url = String::from("/v3/funding_destination/");
         let mut params = HashMap::new();
-	params.insert("fund_currency".to_owned(), fund_currency.to_string());
+        params.insert("fund_currency".to_owned(), fund_currency.to_string());
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
@@ -801,15 +801,15 @@ impl Bitso {
         amount: &str,
         address: &str,
         max_fee: Option<&str>,
-	destination_tag: Option<&str>,
-    ) -> Result<JSONResponse<Withdrawal>, failure::Error> {
+        destination_tag: Option<&str>,
+    ) -> Result<JSONResponse<Withdrawal<CryptoWithdrawal>>, failure::Error> {
         let url = String::from("/v3/crypto_withdrawal/");
         let params = json!({
             "currency": currency,
             "amount": amount,
             "address": address,
             "max_fee": max_fee,
-	    "destination_tag": destination_tag,
+            "destination_tag": destination_tag,
         });
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -829,7 +829,48 @@ impl Bitso {
             &params,
             ApiType::Private
         ).await?;
-        self.convert_result::<JSONResponse<Withdrawal>>(&result)
+        self.convert_result::<JSONResponse<Withdrawal<CryptoWithdrawal>>>(&result)
+    }
+
+    /// Make a get request to place an order
+    /// https://bitso.com/api_info#spei_withdrawal
+    pub async fn spei_withdrawal(
+        &self,
+        amount: &str,
+        recipient_given_names: &str,
+        recipient_family_names: &str,
+        clabe: &str,
+        notes_ref: Option<&str>,
+        numeric_ref: Option<&str>
+    ) -> Result<JSONResponse<Withdrawal<SPEIWithdrawal>>, failure::Error> {
+        let url = String::from("/v3/spei_withdrawal/");
+        let params = json!({
+            "amount": amount,
+            "recipient_given_names": recipient_given_names,
+            "recipient_family_names": recipient_family_names,
+            "clabe": clabe,
+            "notes_ref": notes_ref,
+            "numeric_ref": numeric_ref
+        });
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.post(
+            &url,
+            &params,
+            ApiType::Private
+        ).await?;
+        self.convert_result::<JSONResponse<Withdrawal<SPEIWithdrawal>>>(&result)
     }
 }
 
