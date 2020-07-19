@@ -726,7 +726,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<String>>>(&result)
     }
 
-    /// Make a get request to place an order
+    /// Make a post request to place an order
     /// https://bitso.com/api_info#place-an-order
     pub async fn place_order(
         &self,
@@ -871,6 +871,33 @@ impl Bitso {
             ApiType::Private
         ).await?;
         self.convert_result::<JSONResponse<Withdrawal<SPEIWithdrawal>>>(&result)
+    }
+
+    /// Make a get request to get bank codes
+    /// https://bitso.com/api_info#bank-codes
+    pub async fn get_bank_codes(
+        &self,
+    ) -> Result<JSONResponse<Vec<BankCode>>, failure::Error> {
+        let url = String::from("/v3/mx_bank_codes/");
+        let client_credentials = self.client_credentials_manager.as_ref();
+        match client_credentials {
+            Some(c) => {
+                if c.get_key().is_empty() {
+                    return Err(
+                        failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    )
+                }
+            },
+            None => return Err(
+                    failure::err_msg(EMPTY_CREDENTIALS_MSG)
+                    ),
+        }
+        let result = self.get(
+            &url,
+            &mut HashMap::new(),
+            ApiType::Private
+        ).await?;
+        self.convert_result::<JSONResponse<Vec<BankCode>>>(&result)
     }
 }
 
