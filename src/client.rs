@@ -115,6 +115,7 @@ impl ApiError {
 pub struct Bitso {
     pub prefix: String,
     pub client_credentials_manager: Option<BitsoCredentials>,
+    pub test_env: String,
 }
 
 impl Bitso {
@@ -124,6 +125,7 @@ impl Bitso {
         Bitso {
             prefix: "https://api.bitso.com".to_owned(),
             client_credentials_manager: None,
+            test_env: "".to_string(),
         }
     }
 
@@ -360,12 +362,10 @@ impl Bitso {
     /// https://bitso.com/api_info/#ticker
     pub async fn get_ticker(
         &self,
-        book: Option<&str>,
+        book: &str,
     ) -> Result<JSONResponse<BookTicker>, failure::Error> {
         let mut params = HashMap::new();
-        if let Some(_book) = book {
-            params.insert("book".to_owned(), _book.to_string());
-        }
+        params.insert("book".to_owned(), book.to_string());
         let url = String::from("/v3/ticker/");
         let result = self.get(
             &url,
@@ -379,12 +379,10 @@ impl Bitso {
     /// https://bitso.com/api_info/#order-book
     pub async fn get_order_book(
         &self,
-        book: Option<&str>,
+        book: &str,
     ) -> Result<JSONResponse<OrderBookPayload>, failure::Error> {
         let mut params = HashMap::new();
-        if let Some(_book) = book {
-            params.insert("book".to_owned(), _book.to_string());
-        }
+        params.insert("book".to_owned(), book.to_string());
         let url = String::from("/v3/order_book/");
         let result = self.get(
             &url,
@@ -398,12 +396,10 @@ impl Bitso {
     /// https://bitso.com/api_info/#trades
     pub async fn get_trades(
         &self,
-        book: Option<&str>,
+        book: &str,
     ) -> Result<JSONResponse<Vec<Trade>>, failure::Error> {
         let mut params = HashMap::new();
-        if let Some(_book) = book {
-            params.insert("book".to_owned(), _book.to_string());
-        }
+        params.insert("book".to_owned(), book.to_string());
         let url = String::from("/v3/trades/");
         let result = self.get(
             &url,
