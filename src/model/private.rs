@@ -121,8 +121,8 @@ pub struct FundingDetails {
     tx_hash: Option<String>,
     sender_name: Option<String>,
     sender_bank: Option<String>,
-    sender_clave: Option<String>,
-    receive_clave: Option<String>,
+    sender_clabe: Option<String>,
+    receive_clabe: Option<String>,
     numeric_reference: Option<String>,
     concepto: Option<String>,
     clave_rastreo: Option<String>,
@@ -201,18 +201,29 @@ pub struct FundingDestination {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Withdrawal {
+pub struct Withdrawal<T> {
     pub wid: Option<String>,
     pub status: Option<String>,
     pub created_at: Option<String>,
     pub currency: Option<String>,
     pub method: Option<String>,
     pub amount: Option<String>,
-    pub details: WithdrawalRequestDetails,
+    pub details: T,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct WithdrawalRequestDetails {
+pub struct CryptoWithdrawal {
     withdrawal_address: Option<String>,
     tx_hash: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SPEIWithdrawal {
+    sender_name: Option<String>,
+    receive_clabe: Option<String>,
+    sender_clabe: Option<String>,
+    numeric_reference: Option<String>,
+    concepto: Option<String>,
+    clave_rastreo: Option<String>,
+    beneficiary_name: Option<String>,
 }
