@@ -227,3 +227,9 @@ pub struct SPEIWithdrawal {
     clave_rastreo: Option<String>,
     beneficiary_name: Option<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct BankCode {
+    code: Option<String>,
+    name: Option<String>,
+}
