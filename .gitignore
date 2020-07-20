@@ -13,6 +13,3 @@ Cargo.lock
 #Added by cargo
 
 /target
-
-# Environment variables:
-.env
