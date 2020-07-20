@@ -635,16 +635,12 @@ impl Bitso {
     /// https://bitso.com/api_info#open-orders
     pub async fn get_open_orders(
         &self,
-        book: Option<&str>,
+        book: &str,
     ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>, failure::Error> {
-        let mut url = String::from("/v3/open_orders");
-        if let Some(_book) = book {
-            url = format!(
-                "{}?book={}",
-                url,
-                _book.to_owned()
-            );
-        };
+        let url = format!(
+            "/v3/open_orders?book={}",
+            book.to_owned()
+        );
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
