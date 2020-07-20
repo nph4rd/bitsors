@@ -1,56 +1,55 @@
-/// From: https://bitso.com/api_info#available-books
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AvailableBook {
-    book: Option<String>,
-    minimum_amount: Option<String>,
-    maximum_amount: Option<String>,
-    minimum_price: Option<String>,
-    maximum_price: Option<String>,
-    minimum_value: Option<String>,
-    maximum_value: Option<String>,
+    pub book: Option<String>,
+    pub minimum_amount: Option<String>,
+    pub maximum_amount: Option<String>,
+    pub minimum_price: Option<String>,
+    pub maximum_price: Option<String>,
+    pub minimum_value: Option<String>,
+    pub maximum_value: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BookTicker {
-    book: Option<String>,
-    volume: Option<String>,
-    high: Option<String>,
-    last: Option<String>,
-    low: Option<String>,
-    vwap: Option<String>,
-    ask: Option<String>,
-    bid: Option<String>,
-    created_at: Option<String>,
+    pub book: Option<String>,
+    pub volume: Option<String>,
+    pub high: Option<String>,
+    pub last: Option<String>,
+    pub low: Option<String>,
+    pub vwap: Option<String>,
+    pub ask: Option<String>,
+    pub bid: Option<String>,
+    pub created_at: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OrderBookPayload {
-    asks: Vec<Ask>,
-    bids: Vec<Bid>,
-    updated_at: Option<String>,
-    sequence: Option<String>,
+    pub asks: Vec<Ask>,
+    pub bids: Vec<Bid>,
+    pub updated_at: Option<String>,
+    pub sequence: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ask {
-    book: Option<String>,
-    price: Option<String>,
-    amount: Option<String>,
+    pub book: Option<String>,
+    pub price: Option<String>,
+    pub amount: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Bid {
-    book: Option<String>,
-    price: Option<String>,
-    amount: Option<String>,
+    pub book: Option<String>,
+    pub price: Option<String>,
+    pub amount: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Trade {
-    book: Option<String>,
-    created_at: Option<String>,
-    amount: Option<String>,
-    maker_side: Option<String>,
-    price: Option<String>,
-    tid: Option<u64>,
+    pub book: Option<String>,
+    pub created_at: Option<String>,
+    pub amount: Option<String>,
+    pub maker_side: Option<String>,
+    pub price: Option<String>,
+    pub tid: Option<u64>,
 }

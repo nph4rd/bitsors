@@ -1,6 +1,7 @@
 use std::env;
 use dotenv::dotenv;
 
+/// Client credentials object for Bitso
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BitsoCredentials {
     pub api_key: String,
@@ -9,6 +10,7 @@ pub struct BitsoCredentials {
 
 impl BitsoCredentials {
 
+    /// Create BitsoCredentials object
     pub fn default() -> BitsoCredentials {
         dotenv().ok();
         let api_key = env::var("API_KEY")
@@ -21,6 +23,7 @@ impl BitsoCredentials {
         }
     }
 
+    /// Set api_key
     pub fn api_key(
         mut self,
         api_key: &str,
@@ -29,6 +32,7 @@ impl BitsoCredentials {
         self
     }
 
+    /// Set api_secret
     pub fn api_secret(
         mut self,
         api_secret: &str,
@@ -37,14 +41,17 @@ impl BitsoCredentials {
         self
     }
 
+    /// Build BitsoCredentials object
     pub fn build(self) -> BitsoCredentials {
         self
     }
 
+    /// Get api_key
     pub fn get_key(&self) -> String {
         self.api_key.to_owned()
     }
 
+    /// Get api_secret
     pub fn get_secret(&self) -> String {
         self.api_secret.to_owned()
     }

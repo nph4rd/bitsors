@@ -1,24 +1,23 @@
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AccountStatusPayload {
-    client_id: Option<String>,
-    first_name: Option<String>,
-    last_name: Option<String>,
-    status: Option<String>,
-    daily_limit: Option<String>,
-    daily_remaining: Option<String>,
-    monthly_limit: Option<String>,
-    monthly_remaining: Option<String>,
-    cash_deposit_allowance: Option<String>,
-    cellphone_number: Option<String>,
-    cellphone_number_stored: Option<String>,
-    email_stored: Option<String>,
-    official_id: Option<String>,
-    proof_of_residency: Option<String>,
-    signed_contract: Option<String>,
-    origin_of_funds: Option<String>,
+    pub client_id: Option<String>,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub status: Option<String>,
+    pub daily_limit: Option<String>,
+    pub daily_remaining: Option<String>,
+    pub monthly_limit: Option<String>,
+    pub monthly_remaining: Option<String>,
+    pub cash_deposit_allowance: Option<String>,
+    pub cellphone_number: Option<String>,
+    pub cellphone_number_stored: Option<String>,
+    pub email_stored: Option<String>,
+    pub official_id: Option<String>,
+    pub proof_of_residency: Option<String>,
+    pub signed_contract: Option<String>,
+    pub origin_of_funds: Option<String>,
 }
 
-/// From: https://bitso.com/api_info#account-balance
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AccountBalance {
     pub success: bool,
@@ -27,213 +26,213 @@ pub struct AccountBalance {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Balances {
-    balances: Vec<AccountBalanceInstance>,
+    pub balances: Vec<AccountBalanceInstance>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AccountBalanceInstance {
-    currency: Option<String>,
-    available: Option<String>,
-    locked: Option<String>,
-    total: Option<String>,
-    pending_deposit: Option<String>,
-    pending_withdrawal: Option<String>,
+    pub currency: Option<String>,
+    pub available: Option<String>,
+    pub locked: Option<String>,
+    pub total: Option<String>,
+    pub pending_deposit: Option<String>,
+    pub pending_withdrawal: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FeesPayload {
-    fees: Vec<BookFee>,
-    withdrawal_fees: WithdrawalFees,
+    pub fees: Vec<BookFee>,
+    pub withdrawal_fees: WithdrawalFees,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BookFee {
-    book: Option<String>,
-    taker_fee_decimal: Option<String>,
-    taker_fee_percent: Option<String>,
-    maker_fee_decimal: Option<String>,
-    maker_fee_percent: Option<String>,
+    pub book: Option<String>,
+    pub taker_fee_decimal: Option<String>,
+    pub taker_fee_percent: Option<String>,
+    pub maker_fee_decimal: Option<String>,
+    pub maker_fee_percent: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WithdrawalFees {
-    btc: Option<String>,
-    eth: Option<String>,
+    pub btc: Option<String>,
+    pub eth: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LedgerInstance {
-    eid: Option<String>,
-    operation: Option<String>,
-    created_at: Option<String>,
-    balance_updates: Vec<BalanceUpdate>,
-    details: BalanceDetails,
+    pub eid: Option<String>,
+    pub operation: Option<String>,
+    pub created_at: Option<String>,
+    pub balance_updates: Vec<BalanceUpdate>,
+    pub details: BalanceDetails,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BalanceUpdate {
-    currency: Option<String>,
-    amount: Option<String>,
+    pub currency: Option<String>,
+    pub amount: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BalanceDetails {
-    tid: Option<u64>,
-    oid: Option<String>,
-    fid: Option<String>,
-    wid: Option<String>,
-    method: Option<String>,
-    method_name: Option<String>,
-    funding_address: Option<String>,
+    pub tid: Option<u64>,
+    pub oid: Option<String>,
+    pub fid: Option<String>,
+    pub wid: Option<String>,
+    pub method: Option<String>,
+    pub method_name: Option<String>,
+    pub funding_address: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WithdrawalsPayload {
-    wid: Option<String>,
-    status: Option<String>,
-    created_at: Option<String>,
-    currency: Option<String>,
-    method: Option<String>,
-    amount: Option<String>,
-    details: WithdrawalDetails,
+    pub wid: Option<String>,
+    pub status: Option<String>,
+    pub created_at: Option<String>,
+    pub currency: Option<String>,
+    pub method: Option<String>,
+    pub amount: Option<String>,
+    pub details: WithdrawalDetails,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WithdrawalDetails {
-    withdrawal_address: Option<String>,
-    tx_hash: Option<String>,
-    beneficiary_name: Option<String>,
-    beneficiary_bank: Option<String>,
-    beneficiary_clabe: Option<String>,
-    numeric_reference: Option<String>,
-    concepto: Option<String>,
-    clave_rastreo: Option<String>,
-    cep: Option<Cep>,
+    pub withdrawal_address: Option<String>,
+    pub tx_hash: Option<String>,
+    pub beneficiary_name: Option<String>,
+    pub beneficiary_bank: Option<String>,
+    pub beneficiary_clabe: Option<String>,
+    pub numeric_reference: Option<String>,
+    pub concepto: Option<String>,
+    pub clave_rastreo: Option<String>,
+    pub cep: Option<Cep>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Cep {
-    r#return: Option<CepReturn>,
+    pub r#return: Option<CepReturn>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CepReturn {
-    cda: Option<Cda>,
-    estado_consulta: Option<String>,
-    url: Option<String>,
+    pub cda: Option<Cda>,
+    pub estado_consulta: Option<String>,
+    pub url: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Cda {
-    cadena_original: Option<String>,
-    concepto_pago: Option<String>,
-    cuenta_beneficiario: Option<String>,
-    cuenta_ordenante: Option<String>,
-    fecha_captura: Option<String>,
-    fecha_operacion: Option<String>,
-    hora: Option<String>,
-    iva: Option<String>,
-    monto: Option<String>,
-    nombre_beneficiario: Option<String>,
-    nombre_inst_beneficiaria: Option<String>,
-    nombre_inst_ordenante: Option<String>,
-    nombre_ordenante: Option<String>,
-    sello_digital: Option<String>,
-    serie_certificado: Option<String>,
-    tipo_operacion: Option<String>,
-    tipo_pago: Option<String>,
+    pub cadena_original: Option<String>,
+    pub concepto_pago: Option<String>,
+    pub cuenta_beneficiario: Option<String>,
+    pub cuenta_ordenante: Option<String>,
+    pub fecha_captura: Option<String>,
+    pub fecha_operacion: Option<String>,
+    pub hora: Option<String>,
+    pub iva: Option<String>,
+    pub monto: Option<String>,
+    pub nombre_beneficiario: Option<String>,
+    pub nombre_inst_beneficiaria: Option<String>,
+    pub nombre_inst_ordenante: Option<String>,
+    pub nombre_ordenante: Option<String>,
+    pub sello_digital: Option<String>,
+    pub serie_certificado: Option<String>,
+    pub tipo_operacion: Option<String>,
+    pub tipo_pago: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FundingsPayload {
-    fid: Option<String>,
-    status: Option<String>,
-    created_at: Option<String>,
-    currency: Option<String>,
-    method: Option<String>,
-    amount: Option<String>,
-    details: FundingDetails,
+    pub fid: Option<String>,
+    pub status: Option<String>,
+    pub created_at: Option<String>,
+    pub currency: Option<String>,
+    pub method: Option<String>,
+    pub amount: Option<String>,
+    pub details: FundingDetails,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FundingDetails {
-    funding_address: Option<String>,
-    tx_hash: Option<String>,
-    sender_name: Option<String>,
-    sender_bank: Option<String>,
-    sender_clabe: Option<String>,
-    receive_clabe: Option<String>,
-    numeric_reference: Option<String>,
-    concepto: Option<String>,
-    clave_rastreo: Option<String>,
-    beneficiary_name: Option<String>,
+    pub funding_address: Option<String>,
+    pub tx_hash: Option<String>,
+    pub sender_name: Option<String>,
+    pub sender_bank: Option<String>,
+    pub sender_clabe: Option<String>,
+    pub receive_clabe: Option<String>,
+    pub numeric_reference: Option<String>,
+    pub concepto: Option<String>,
+    pub clave_rastreo: Option<String>,
+    pub beneficiary_name: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UserTradesPayload {
-    book: Option<String>,
-    major: Option<String>,
-    created_at: Option<String>,
-    minor: Option<String>,
-    fees_amount: Option<String>,
-    fees_currency: Option<String>,
-    price: Option<String>,
-    tid: Option<u64>,
-    oid: Option<String>,
-    side: Option<String>,
+    pub book: Option<String>,
+    pub major: Option<String>,
+    pub created_at: Option<String>,
+    pub minor: Option<String>,
+    pub fees_amount: Option<String>,
+    pub fees_currency: Option<String>,
+    pub price: Option<String>,
+    pub tid: Option<u64>,
+    pub oid: Option<String>,
+    pub side: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OrderTradesPayload {
-    book: Option<String>,
-    major: Option<String>,
-    created_at: Option<String>,
-    minor: Option<String>,
-    fees_amount: Option<String>,
-    fees_currency: Option<String>,
-    price: Option<String>,
-    tid: Option<u64>,
-    oid: Option<String>,
-    client_id: Option<String>,
-    side: Option<String>,
+    pub book: Option<String>,
+    pub major: Option<String>,
+    pub created_at: Option<String>,
+    pub minor: Option<String>,
+    pub fees_amount: Option<String>,
+    pub fees_currency: Option<String>,
+    pub price: Option<String>,
+    pub tid: Option<u64>,
+    pub oid: Option<String>,
+    pub client_id: Option<String>,
+    pub side: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OpenOrdersPayload {
-    book: Option<String>,
-    original_amount: Option<String>,
-    unfilled_amount: Option<String>,
-    original_value: Option<String>,
-    created_at: Option<String>,
-    updated_at: Option<String>,
-    price: Option<String>,
-    oid: Option<String>,
-    client_id: Option<String>,
-    side: Option<String>,
-    status: Option<String>,
-    r#type: Option<String>,
+    pub book: Option<String>,
+    pub original_amount: Option<String>,
+    pub unfilled_amount: Option<String>,
+    pub original_value: Option<String>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub price: Option<String>,
+    pub oid: Option<String>,
+    pub client_id: Option<String>,
+    pub side: Option<String>,
+    pub status: Option<String>,
+    pub r#type: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LookupOrdersPayload {
-    book: Option<String>,
-    original_amount: Option<String>,
-    unfilled_amount: Option<String>,
-    original_value: Option<String>,
-    created_at: Option<String>,
-    updated_at: Option<String>,
-    price: Option<String>,
-    oid: Option<String>,
-    side: Option<String>,
-    status: Option<String>,
-    r#type: Option<String>,
+    pub book: Option<String>,
+    pub original_amount: Option<String>,
+    pub unfilled_amount: Option<String>,
+    pub original_value: Option<String>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub price: Option<String>,
+    pub oid: Option<String>,
+    pub side: Option<String>,
+    pub status: Option<String>,
+    pub r#type: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PlaceOrderPayload {
-    oid: Option<String>,
+    pub oid: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -255,45 +254,45 @@ pub struct Withdrawal<T> {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CryptoWithdrawal {
-    withdrawal_address: Option<String>,
-    tx_hash: Option<String>,
+    pub withdrawal_address: Option<String>,
+    pub tx_hash: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SPEIWithdrawal {
-    sender_name: Option<String>,
-    receive_clabe: Option<String>,
-    sender_clabe: Option<String>,
-    numeric_reference: Option<String>,
-    concepto: Option<String>,
-    clave_rastreo: Option<String>,
-    beneficiary_name: Option<String>,
+    pub sender_name: Option<String>,
+    pub receive_clabe: Option<String>,
+    pub sender_clabe: Option<String>,
+    pub numeric_reference: Option<String>,
+    pub concepto: Option<String>,
+    pub clave_rastreo: Option<String>,
+    pub beneficiary_name: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DebitWithdrawal {
-    sender_name: Option<String>,
-    receive_clabe: Option<String>,
-    sender_clabe: Option<String>,
-    numeric_reference: Option<String>,
-    concepto: Option<String>,
-    clave_rastreo: Option<String>,
-    beneficiary_name: Option<String>,
+    pub sender_name: Option<String>,
+    pub receive_clabe: Option<String>,
+    pub sender_clabe: Option<String>,
+    pub numeric_reference: Option<String>,
+    pub concepto: Option<String>,
+    pub clave_rastreo: Option<String>,
+    pub beneficiary_name: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PhoneWithdrawal {
-    sender_name: Option<String>,
-    receive_clabe: Option<String>,
-    sender_clabe: Option<String>,
-    numeric_reference: Option<String>,
-    concepto: Option<String>,
-    clave_rastreo: Option<String>,
-    beneficiary_name: Option<String>,
+    pub sender_name: Option<String>,
+    pub receive_clabe: Option<String>,
+    pub sender_clabe: Option<String>,
+    pub numeric_reference: Option<String>,
+    pub concepto: Option<String>,
+    pub clave_rastreo: Option<String>,
+    pub beneficiary_name: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BankCode {
-    code: Option<String>,
-    name: Option<String>,
+    pub code: Option<String>,
+    pub name: Option<String>,
 }

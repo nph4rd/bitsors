@@ -33,15 +33,19 @@ const EMPTY_CREDENTIALS_MSG: &str = "You need to set your Bitso API \
                                      `https://bitso.com/api_info#generating-api-keys`";
 
 
-/// API Type
+/// API Type that indicates whether a method
+/// corresponds to the public or private API.
 pub enum ApiType {
     Public,
     Private
 }
 
-/// API Errors
+/// API Errors associated to the Bitso API object
 #[derive(Debug, Deserialize)]
 pub enum ApiError {
+    /// A regular error is derived from
+    /// Bitso's API responses. For more information
+    /// see: `https://bitso.com/api_info#error-codes`
     #[serde(alias = "error")]
     RegularError {
         success: bool,
@@ -78,16 +82,19 @@ impl fmt::Display for ApiError {
     }
 }
 
+/// A regular error from Bitso's API.
+/// See: `https://bitso.com/api_info#error-codes`
 #[derive(Debug, Deserialize)]
 pub struct RegularError {
     pub success: bool,
     pub error: ErrorDetails,
 }
 
+/// See: `https://bitso.com/api_info#error-codes`
 #[derive(Debug, Deserialize)]
 pub struct ErrorDetails {
-    code: String,
-    message: String,
+    pub code: String,
+    pub message: String,
 }
 
 impl ApiError {
@@ -115,7 +122,6 @@ impl ApiError {
 pub struct Bitso {
     pub prefix: String,
     pub client_credentials_manager: Option<BitsoCredentials>,
-    pub test_env: String,
 }
 
 impl Bitso {
@@ -125,15 +131,16 @@ impl Bitso {
         Bitso {
             prefix: "https://api.bitso.com".to_owned(),
             client_credentials_manager: None,
-            test_env: "".to_string(),
         }
     }
 
+    /// Set prefix
     pub fn prefix(mut self, prefix: &str) -> Bitso {
         self.prefix = prefix.to_owned();
         self
     }
 
+    /// Set client credentials
     pub fn client_credentials_manager(
         mut self,
         client_credential_manager: BitsoCredentials,
@@ -147,6 +154,8 @@ impl Bitso {
         self
     }
 
+    /// Construct authorization headers.
+    /// See: `https://bitso.com/api_info#creating-and-signing-requests`
     pub fn auth_headers(
         &self,
         method: &Method,
@@ -266,7 +275,7 @@ impl Bitso {
         }
     }
 
-    /// Function to make get requests
+    /// Makes get requests
     async fn get(
         &self,
         url: &str,
@@ -289,7 +298,7 @@ impl Bitso {
         }
     }
 
-    ///send post request
+    /// Makes post requests
     async fn post(
         &self,
         url: &str,
@@ -304,7 +313,7 @@ impl Bitso {
         ).await
     }
 
-    /// Function to make delete requests
+    /// Makes delete requests
     async fn delete(
         &self,
         url:&str,
@@ -344,7 +353,7 @@ impl Bitso {
         Ok(result)
     }
 
-    /// Make a get request to pull available books
+    /// Make a request to get available books
     /// https://bitso.com/api_info/#available-books
     pub async fn get_available_books(
         &self
@@ -358,7 +367,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<AvailableBook>>>(&result)
     }
 
-    /// Make a get request to pull ticker
+    /// Make a request to get ticker
     /// https://bitso.com/api_info/#ticker
     pub async fn get_ticker(
         &self,
@@ -375,7 +384,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<BookTicker>>(&result)
     }
 
-    /// Make a get request to pull a specific order book
+    /// Make a request to get a specific order book
     /// https://bitso.com/api_info/#order-book
     pub async fn get_order_book(
         &self,
@@ -392,7 +401,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<OrderBookPayload>>(&result)
     }
 
-    /// Make a get request to pull a specific trade
+    /// Make a request to get a specific trade
     /// https://bitso.com/api_info/#trades
     pub async fn get_trades(
         &self,
@@ -409,12 +418,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<Trade>>>(&result)
     }
 
-
-    ///
-    /// Private API
-    ///
-
-    /// Make a get request to get account status
+    /// Make a request to get account status
     /// https://bitso.com/api_info#account-status
     pub async fn get_account_status(
         &self,
@@ -441,7 +445,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<AccountStatusPayload>>(&result)
     }
 
-    /// Make a get request to get account balance
+    /// Make a request to get account balance
     /// https://bitso.com/api_info#account-balance
     pub async fn get_account_balance(
         &self,
@@ -468,7 +472,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Balances>>(&result)
     }
 
-    /// Make a get request to get fees
+    /// Make a request to get fees
     /// https://bitso.com/api_info#fees
     pub async fn get_fees(
         &self,
@@ -495,7 +499,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<FeesPayload>>(&result)
     }
 
-    /// Make a get request to get ledger
+    /// Make a request to get ledger
     /// https://bitso.com/api_info#ledger
     pub async fn get_ledger(
         &self,
@@ -522,7 +526,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<LedgerInstance>>>(&result)
     }
 
-    /// Make a get request to get withdrawals
+    /// Make a request to get withdrawals
     /// https://bitso.com/api_info#withdrawals
     pub async fn get_withdrawals(
         &self,
@@ -549,7 +553,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<WithdrawalsPayload>>>(&result)
     }
 
-    /// Make a get request to get fundings
+    /// Make a request to get fundings
     /// https://bitso.com/api_info#fundings
     pub async fn get_fundings(
         &self,
@@ -576,7 +580,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<FundingsPayload>>>(&result)
     }
 
-    /// Make a get request to get user trades
+    /// Make a request to get user trades
     /// https://bitso.com/api_info#user-trades
     pub async fn get_user_trades(
         &self,
@@ -603,7 +607,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<UserTradesPayload>>>(&result)
     }
 
-    /// Make a get request to get order trades
+    /// Make a request to get order trades
     /// https://bitso.com/api_info#order-trades
     pub async fn get_order_trades(
         &self,
@@ -631,7 +635,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<OrderTradesPayload>>>(&result)
     }
 
-    /// Make a get request to get open orders
+    /// Make a request to get open orders
     /// https://bitso.com/api_info#open-orders
     pub async fn get_open_orders(
         &self,
@@ -662,7 +666,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<OpenOrdersPayload>>>(&result)
     }
 
-    /// Make a get request to get lookup orders
+    /// Make a request to get lookup orders
     /// https://bitso.com/api_info#lookup-orders
     pub async fn get_lookup_orders(
         &self,
@@ -690,7 +694,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Vec<LookupOrdersPayload>>>(&result)
     }
 
-    /// Make a get request to cancel order
+    /// Make a request to cancel order
     /// https://bitso.com/api_info#cancel-order
     pub async fn cancel_order(
         &self,
@@ -755,8 +759,8 @@ impl Bitso {
         self.convert_result::<JSONResponse<PlaceOrderPayload>>(&result)
     }
 
-    /// Make a get request to get lookup orders
-    /// https://bitso.com/api_info#funding-destination
+    /// Make a request to get lookup orders
+    /// https://bitso.com/api_info#lookup-orders
     pub async fn get_funding_destination(
         &self,
         fund_currency: &str,
@@ -785,7 +789,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<FundingDestination>>(&result)
     }
 
-    /// Make a get request to place an order
+    /// Make a request to place an crypto withdrawal
     /// https://bitso.com/api_info#crypto-withdrawals
     pub async fn crypto_withdrawal(
         &self,
@@ -824,7 +828,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Withdrawal<CryptoWithdrawal>>>(&result)
     }
 
-    /// Make a get request to place an order
+    /// Make a request to place a speri withdrawal
     /// https://bitso.com/api_info#spei-withdrawal
     pub async fn spei_withdrawal(
         &self,
@@ -865,7 +869,7 @@ impl Bitso {
         self.convert_result::<JSONResponse<Withdrawal<SPEIWithdrawal>>>(&result)
     }
 
-    /// Make a get request to get bank codes
+    /// Make a request to get bank codes
     /// https://bitso.com/api_info#bank-codes
     pub async fn get_bank_codes(
         &self,
