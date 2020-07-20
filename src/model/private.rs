@@ -78,7 +78,7 @@ pub struct BalanceUpdate {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BalanceDetails {
-    tid: Option<String>,
+    tid: Option<u64>,
     oid: Option<String>,
     fid: Option<String>,
     wid: Option<String>,
@@ -102,6 +102,48 @@ pub struct WithdrawalsPayload {
 pub struct WithdrawalDetails {
     withdrawal_address: Option<String>,
     tx_hash: Option<String>,
+    beneficiary_name: Option<String>,
+    beneficiary_bank: Option<String>,
+    beneficiary_clabe: Option<String>,
+    numeric_reference: Option<String>,
+    concepto: Option<String>,
+    clave_rastreo: Option<String>,
+    cep: Option<Cep>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Cep {
+    r#return: Option<CepReturn>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CepReturn {
+    cda: Option<Cda>,
+    estado_consulta: Option<String>,
+    url: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Cda {
+    cadena_original: Option<String>,
+    concepto_pago: Option<String>,
+    cuenta_beneficiario: Option<String>,
+    cuenta_ordenante: Option<String>,
+    fecha_captura: Option<String>,
+    fecha_operacion: Option<String>,
+    hora: Option<String>,
+    iva: Option<String>,
+    monto: Option<String>,
+    nombre_beneficiario: Option<String>,
+    nombre_inst_beneficiaria: Option<String>,
+    nombre_inst_ordenante: Option<String>,
+    nombre_ordenante: Option<String>,
+    sello_digital: Option<String>,
+    serie_certificado: Option<String>,
+    tipo_operacion: Option<String>,
+    tipo_pago: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -138,7 +180,7 @@ pub struct UserTradesPayload {
     fees_amount: Option<String>,
     fees_currency: Option<String>,
     price: Option<String>,
-    tid: Option<String>,
+    tid: Option<u64>,
     oid: Option<String>,
     side: Option<String>,
 }
@@ -152,7 +194,7 @@ pub struct OrderTradesPayload {
     fees_amount: Option<String>,
     fees_currency: Option<String>,
     price: Option<String>,
-    tid: Option<String>,
+    tid: Option<u64>,
     oid: Option<String>,
     client_id: Option<String>,
     side: Option<String>,
@@ -178,7 +220,7 @@ pub struct OpenOrdersPayload {
 pub struct LookupOrdersPayload {
     book: Option<String>,
     original_amount: Option<String>,
-    unfilled_amount: Option<u64>,
+    unfilled_amount: Option<String>,
     original_value: Option<String>,
     created_at: Option<String>,
     updated_at: Option<String>,
