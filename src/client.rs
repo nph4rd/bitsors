@@ -149,13 +149,12 @@ impl Bitso {
         let payload_string: String;
         if method != Method::POST {
             payload_string = "".to_owned();
+        } else if let Some(json) = payload {
+            payload_string = json.to_string();
         } else {
-            if let Some(json) = payload {
-                payload_string = json.to_string();
-            } else {
-                panic!("POST method must have a payload.")
-            }
+            panic!("POST method must have a payload.")
         }
+        
 
         let api_key = self.client_credentials_manager.as_ref().unwrap().get_key();
         let api_secret = self
