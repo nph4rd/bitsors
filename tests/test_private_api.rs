@@ -1,12 +1,12 @@
-extern crate mockito;
 extern crate bitsors;
+extern crate mockito;
 #[macro_use]
 extern crate lazy_static;
 
+use bitsors::auth::BitsoCredentials;
+use bitsors::client::Bitso;
 use mockito::{mock, Matcher};
 use std::sync::Mutex;
-use bitsors::client::Bitso;
-use bitsors::auth::BitsoCredentials;
 
 lazy_static! {
     // Set api_key and api_secret in .env file or
@@ -17,25 +17,22 @@ lazy_static! {
 
 /// *** PRIVATE API *** ///
 
-
 /// Test unsuccessful request due to empty credentials
 #[tokio::test]
 async fn test_empty_credentials() {
-    let bitso = Bitso::default()
-        .prefix("https://api-dev.bitso.com")
-        .build();
+    let bitso = Bitso::default().prefix("https://api-dev.bitso.com").build();
     let result = bitso.get_account_status().await;
     assert!(result.is_err()); // Empty credentials
     println!("{:?}", result);
 }
-
 
 /// Test successful request to get account status
 #[tokio::test]
 async fn test_account_status() {
     let _mock = mock("GET", "/v3/account_status/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "client_id": "1234",
@@ -55,29 +52,25 @@ async fn test_account_status() {
                 "signed_contract": "unsubmitted",
                 "origin_of_funds": "unsubmitted"
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_account_status().await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
 
-
 /// Test successful request to get account balance
 #[tokio::test]
 async fn test_account_balance() {
     let _mock = mock("GET", "/v3/balance/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "balances": [{
@@ -97,16 +90,12 @@ async fn test_account_balance() {
                     "available": "10.0000"
                 }]
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_account_balance().await;
     assert!(result.is_ok());
@@ -118,7 +107,8 @@ async fn test_account_balance() {
 async fn test_fees() {
     let _mock = mock("GET", "/v3/fees/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "fees": [{
@@ -139,16 +129,12 @@ async fn test_fees() {
                     "eth": "0.0025"
                 }
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_fees().await;
     assert!(result.is_ok());
@@ -160,7 +146,8 @@ async fn test_fees() {
 async fn test_ledger() {
     let _mock = mock("GET", "/v3/ledger/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                 "eid": "c4ca4238a0b923820dcc509a6f75849b",
@@ -254,16 +241,12 @@ async fn test_ledger() {
                     "method": "sp"
                 }
             }]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_ledger().await;
     assert!(result.is_ok());
@@ -380,12 +363,7 @@ async fn test_withdrawals() {
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_withdrawals().await;
     assert!(result.is_ok());
@@ -397,7 +375,8 @@ async fn test_withdrawals() {
 async fn test_fundings() {
     let _mock = mock("GET", "/v3/fundings/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                 "fid": "c5b8d7f0768ee91d3b33bee648318688",
@@ -428,16 +407,12 @@ async fn test_fundings() {
                     "beneficiary_name": "ALFRED NORTH WHITEHEAD"
                 }
             }]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_fundings().await;
     assert!(result.is_ok());
@@ -449,7 +424,8 @@ async fn test_fundings() {
 async fn test_user_trades() {
     let _mock = mock("GET", "/v3/user_trades/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                 "book": "btc_mxn",
@@ -476,16 +452,12 @@ async fn test_user_trades() {
                 "side": "buy",
                 "make_side": "sell"
             }]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_user_trades().await;
     // assert!(result.is_ok());
@@ -497,7 +469,8 @@ async fn test_user_trades() {
 async fn test_order_trades() {
     let _mock = mock("GET", "/v3/order_trades/Jvqrschkgdkc1go3/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                     "book": "btc_mxn",
@@ -528,16 +501,12 @@ async fn test_order_trades() {
                     "make_side": "sell"
                 }
             ]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_order_trades("Jvqrschkgdkc1go3").await;
     assert!(result.is_ok());
@@ -549,7 +518,8 @@ async fn test_order_trades() {
 async fn test_open_orders() {
     let _mock = mock("GET", "/v3/open_orders?book=btc_mxn")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                 "book": "btc_mxn",
@@ -589,16 +559,12 @@ async fn test_open_orders() {
                 "status": "open",
                 "type": "limit"
             }]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_open_orders("btc_mxn").await;
     assert!(result.is_ok());
@@ -610,7 +576,8 @@ async fn test_open_orders() {
 async fn test_lookup_orders() {
     let _mock = mock("GET", "/v3/orders/543cr2v32a1h6844/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                 "book": "btc_mxn",
@@ -637,16 +604,12 @@ async fn test_lookup_orders() {
                 "status": "open",
                 "type": "limit"
             }]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_lookup_orders("543cr2v32a1h6844").await;
     assert!(result.is_ok());
@@ -658,23 +621,20 @@ async fn test_lookup_orders() {
 async fn test_cancel_order() {
     let _mock = mock("DELETE", "/v3/orders/cME2F7uZKJcMKXqU/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload":[
                 "cME2F7uZKJcMKXqU",
                 "FwllxXRKvcgJmyFy",
                 "zhDI9iBRglW9s9Vu"
             ]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.cancel_order("cME2F7uZKJcMKXqU").await;
     assert!(result.is_ok());
@@ -686,28 +646,22 @@ async fn test_cancel_order() {
 async fn test_place_order() {
     let _mock = mock("POST", "/v3/orders/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "oid": "qlbga6b600n3xta7"
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.place_order(
-        "btc_mxn",
-        "sell",
-        "market",
-        Some("0.0001"),
-    ).await;
+    let result = bitso
+        .place_order("btc_mxn", "sell", "market", Some("0.0001"))
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -718,26 +672,21 @@ async fn test_funding_destination() {
     let _mock = mock("GET", "/v3/funding_destination/")
         .match_query(Matcher::UrlEncoded("fund_currency".into(), "btc".into()))
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "account_identifier_name": "SPEI CLABE",
                 "account_identifier": "646180115400346012"
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_funding_destination(
-        "btc",
-    ).await;
+    let result = bitso.get_funding_destination("btc").await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -747,7 +696,8 @@ async fn test_funding_destination() {
 async fn test_crypto_withdrawal() {
     let _mock = mock("POST", "/v3/crypto_withdrawal/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "wid": "c5b8d7f0768ee91d3b33bee648318688",
@@ -761,24 +711,22 @@ async fn test_crypto_withdrawal() {
                     "tx_hash": null
                 }
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.crypto_withdrawal(
-        "btc",
-        "0.001",
-        "3EW92Ajg6sMT4hxK8ngEc7Ehrqkr9RoDt7",
-        Some("0.001"),
-        Some("some_tag"),
-    ).await;
+    let result = bitso
+        .crypto_withdrawal(
+            "btc",
+            "0.001",
+            "3EW92Ajg6sMT4hxK8ngEc7Ehrqkr9RoDt7",
+            Some("0.001"),
+            Some("some_tag"),
+        )
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -788,7 +736,8 @@ async fn test_crypto_withdrawal() {
 async fn test_spei_withdrawal() {
     let _mock = mock("POST", "/v3/spei_withdrawal/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "wid": "p4u8d7f0768ee91d3b33bee6483132i8",
@@ -807,25 +756,23 @@ async fn test_spei_withdrawal() {
                     "beneficiary_name": "FRANCISCO MARQUEZ"
                 }
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.spei_withdrawal(
-        "200",
-        "alguien alguien",
-        "guien guillen",
-        "012610001967722183",
-        Some("notes_ref"),
-        Some("numeric_red"),
-    ).await;
+    let result = bitso
+        .spei_withdrawal(
+            "200",
+            "alguien alguien",
+            "guien guillen",
+            "012610001967722183",
+            Some("notes_ref"),
+            Some("numeric_red"),
+        )
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -835,7 +782,8 @@ async fn test_spei_withdrawal() {
 async fn test_bank_codes() {
     let _mock = mock("GET", "/v3/mx_bank_codes/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                 "code": "01",
@@ -844,16 +792,12 @@ async fn test_bank_codes() {
                 "code": "02",
                 "name": "BBVA"
             }]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_bank_codes().await;
     assert!(result.is_ok());
@@ -865,7 +809,8 @@ async fn test_bank_codes() {
 async fn test_debit_card_withdrawal() {
     let _mock = mock("POST", "/v3/debit_card_withdrawal/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "wid": "p4u8d7f0768ee91d3b33bee6483132i8",
@@ -884,24 +829,22 @@ async fn test_debit_card_withdrawal() {
                     "beneficiary_name": "FRANCISCO MARQUEZ"
                 }
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.debit_card_withdrawal(
-        "200",
-        "alguien alguien",
-        "guien guillen",
-        "0123456789012345",
-        "40138",
-    ).await;
+    let result = bitso
+        .debit_card_withdrawal(
+            "200",
+            "alguien alguien",
+            "guien guillen",
+            "0123456789012345",
+            "40138",
+        )
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -911,7 +854,8 @@ async fn test_debit_card_withdrawal() {
 async fn test_phone_number_withdrawal() {
     let _mock = mock("POST", "/v3/phone_withdrawal/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "wid": "p4u8d7f0768ee91d3b33bee6483132i8",
@@ -930,24 +874,22 @@ async fn test_phone_number_withdrawal() {
                     "beneficiary_name": "FRANCISCO MARQUEZ"
                 }
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
-        .client_credentials_manager(
-            CLIENT_CREDENTIAL
-            .lock()
-            .unwrap()
-            .clone()
-        )
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.phone_number_withdrawal(
-        "200",
-        "alguien alguien",
-        "guien guillen",
-        "0123456789",
-        "40138",
-    ).await;
+    let result = bitso
+        .phone_number_withdrawal(
+            "200",
+            "alguien alguien",
+            "guien guillen",
+            "0123456789",
+            "40138",
+        )
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
