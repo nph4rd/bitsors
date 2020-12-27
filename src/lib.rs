@@ -20,8 +20,8 @@
 //! For more detailed information on how to use this wrapper, you could
 //! see the [examples](https://github.com/arturomf94/bitsors/tree/master/examples), which hold detailed use-cases.
 
-extern crate openssl;
 extern crate hex;
+extern crate openssl;
 extern crate reqwest;
 extern crate serde;
 #[macro_use]
@@ -33,7 +33,7 @@ extern crate lazy_static;
 extern crate dotenv;
 #[macro_use]
 extern crate failure;
-pub mod client;
-pub mod util;
-pub mod model;
 pub mod auth;
+pub mod client;
+pub mod model;
+pub mod util;

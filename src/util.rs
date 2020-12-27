@@ -19,4 +19,3 @@ pub fn convert_map_to_string<
     }
     string
 }
-

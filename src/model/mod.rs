@@ -4,5 +4,5 @@ pub struct JSONResponse<T> {
     payload: T,
 }
 
-pub mod public;
 pub mod private;
+pub mod public;

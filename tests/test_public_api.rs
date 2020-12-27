@@ -1,8 +1,8 @@
-extern crate mockito;
 extern crate bitsors;
+extern crate mockito;
 
-use mockito::{mock, Matcher};
 use bitsors::client::Bitso;
+use mockito::{mock, Matcher};
 
 /// Test unsuccesful request and error parsing
 #[tokio::test]
@@ -10,13 +10,15 @@ async fn test_error_parsing() {
     let _mock = mock("GET", "/v3/ticker/")
         .match_query(Matcher::UrlEncoded("book".into(), "FAKEORDERBOOK".into()))
         .with_status(400)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": false,
             "error": {
                 "code": "0301",
                 "message": "Unknown OrderBook FAKEORDERBOOK"
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
@@ -31,7 +33,8 @@ async fn test_error_parsing() {
 async fn test_available_books() {
     let _mock = mock("GET", "/v3/available_books/")
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                 "book": "btc_mxn",
@@ -50,7 +53,8 @@ async fn test_available_books() {
                 "minimum_value": "25.0",
                 "maximum_value": "1000000.0"
             }]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
@@ -66,7 +70,8 @@ async fn test_ticker() {
     let _mock = mock("GET", "/v3/ticker/")
         .match_query(Matcher::UrlEncoded("book".into(), "btc_mxn".into()))
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "book": "btc_mxn",
@@ -79,7 +84,8 @@ async fn test_ticker() {
                 "bid": "5520.01",
                 "created_at": "2016-04-08T17:52:31.000+00:00"
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
@@ -95,7 +101,8 @@ async fn test_order_book() {
     let _mock = mock("GET", "/v3/order_book/")
         .match_query(Matcher::UrlEncoded("book".into(), "btc_mxn".into()))
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": {
                 "asks": [{
@@ -123,7 +130,8 @@ async fn test_order_book() {
                 "updated_at": "2016-04-08T17:52:31.000+00:00",
                 "sequence": "27214"
             }
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
@@ -139,7 +147,8 @@ async fn test_trades() {
     let _mock = mock("GET", "/v3/trades/")
         .match_query(Matcher::UrlEncoded("book".into(), "btc_mxn".into()))
         .with_status(200)
-        .with_body(r#"{
+        .with_body(
+            r#"{
             "success": true,
             "payload": [{
                 "book": "btc_mxn",
@@ -156,7 +165,8 @@ async fn test_trades() {
                 "price": "5633.98",
                 "tid": 55844
             }]
-        }"#)
+        }"#,
+        )
         .create();
     let bitso = Bitso::default()
         .prefix(mockito::server_url().to_string().as_str())
@@ -165,4 +175,3 @@ async fn test_trades() {
     assert!(result.is_ok());
     println!("{:?}", result);
 }
-
