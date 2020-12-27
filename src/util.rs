@@ -13,9 +13,9 @@ pub fn convert_map_to_string<
     let mut string: String = String::new();
     for (key, value) in map.iter() {
         string.push_str(&key.to_string());
-        string.push_str("=");
+        string.push('=');
         string.push_str(&value.to_string());
-        string.push_str("&");
+        string.push('&');
     }
     string
 }
