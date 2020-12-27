@@ -62,12 +62,8 @@ impl fmt::Display for ApiError {
                 success: _,
                 code,
                 message,
-            } => {
-                write!(f, "Bitso API error code {}: {}", code, message)
-            }
-            ApiError::Other(s) => {
-                write!(f, "Bitso API reported error code {}", s)
-            }
+            } => write!(f, "Bitso API error code {}: {}", code, message),
+            ApiError::Other(s) => write!(f, "Bitso API reported error code {}", s),
         }
     }
 }
@@ -154,7 +150,6 @@ impl Bitso {
         } else {
             panic!("POST method must have a payload.")
         }
-        
 
         let api_key = self.client_credentials_manager.as_ref().unwrap().get_key();
         let api_secret = self
