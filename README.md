@@ -1,5 +1,6 @@
 [![Crates.io](https://img.shields.io/crates/v/bitsors.svg)](https://crates.io/crates/bitsors)
 [![Docs](https://docs.rs/bitsors/badge.svg)](https://docs.rs/crate/bitsors/)
+![CI checks](https://github.com/arturomf94/bitsors/workflows/CI%20checks/badge.svg)
 
 # bitsors
 A Rust wrapper for the [Bitso API](https://bitso.com/api_info/).
