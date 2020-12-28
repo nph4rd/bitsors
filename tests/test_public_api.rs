@@ -21,7 +21,7 @@ async fn test_error_parsing() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .build();
     let result = bitso.get_ticker("FAKEORDERBOOK").await;
     assert!(result.is_err());
@@ -57,7 +57,7 @@ async fn test_available_books() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .build();
     let result = bitso.get_available_books().await;
     assert!(result.is_ok());
@@ -88,7 +88,7 @@ async fn test_ticker() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .build();
     let result = bitso.get_ticker("btc_mxn").await;
     assert!(result.is_ok());
@@ -134,7 +134,7 @@ async fn test_order_book() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .build();
     let result = bitso.get_order_book("btc_mxn").await;
     assert!(result.is_ok());
@@ -169,7 +169,7 @@ async fn test_trades() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .build();
     let result = bitso.get_trades("btc_mxn").await;
     assert!(result.is_ok());

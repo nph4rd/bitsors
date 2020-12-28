@@ -56,7 +56,7 @@ async fn test_account_status() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_account_status().await;
@@ -94,7 +94,7 @@ async fn test_account_balance() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_account_balance().await;
@@ -133,7 +133,7 @@ async fn test_fees() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_fees().await;
@@ -245,7 +245,7 @@ async fn test_ledger() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_ledger().await;
@@ -362,7 +362,7 @@ async fn test_withdrawals() {
         }"#)
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_withdrawals().await;
@@ -411,7 +411,7 @@ async fn test_fundings() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_fundings().await;
@@ -456,7 +456,7 @@ async fn test_user_trades() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_user_trades().await;
@@ -505,7 +505,7 @@ async fn test_order_trades() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_order_trades("Jvqrschkgdkc1go3").await;
@@ -563,7 +563,7 @@ async fn test_open_orders() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_open_orders("btc_mxn").await;
@@ -608,7 +608,7 @@ async fn test_lookup_orders() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_lookup_orders("543cr2v32a1h6844").await;
@@ -633,7 +633,7 @@ async fn test_cancel_order() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.cancel_order("cME2F7uZKJcMKXqU").await;
@@ -656,7 +656,7 @@ async fn test_place_order() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso
@@ -683,7 +683,7 @@ async fn test_funding_destination() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_funding_destination("btc").await;
@@ -715,7 +715,7 @@ async fn test_crypto_withdrawal() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso
@@ -760,7 +760,7 @@ async fn test_spei_withdrawal() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso
@@ -796,7 +796,7 @@ async fn test_bank_codes() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_bank_codes().await;
@@ -833,7 +833,7 @@ async fn test_debit_card_withdrawal() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso
@@ -878,7 +878,7 @@ async fn test_phone_number_withdrawal() {
         )
         .create();
     let bitso = Bitso::default()
-        .prefix(mockito::server_url().to_string().as_str())
+        .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso
