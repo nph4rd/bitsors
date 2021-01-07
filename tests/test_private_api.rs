@@ -62,6 +62,9 @@ async fn test_account_status() {
     let result = bitso.get_account_status().await;
     assert!(result.is_ok());
     println!("{:?}", result);
+    // Test that the result's contents can be reached
+    let client_id = result.unwrap().payload.client_id;
+    assert_eq!(client_id, Some("1234".to_owned()));
 }
 
 /// Test successful request to get account balance

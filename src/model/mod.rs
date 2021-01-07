@@ -1,7 +1,7 @@
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct JSONResponse<T> {
-    success: bool,
-    payload: T,
+    pub success: bool,
+    pub payload: T,
 }
 
 pub mod private;
