@@ -32,7 +32,7 @@ extern crate serde_derive;
 extern crate lazy_static;
 extern crate dotenv;
 #[macro_use]
-extern crate failure;
+extern crate anyhow;
 pub mod auth;
 pub mod client;
 pub mod model;
