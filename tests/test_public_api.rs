@@ -26,6 +26,10 @@ async fn test_error_parsing() {
     let result = bitso.get_ticker("FAKEORDERBOOK").await;
     assert!(result.is_err());
     println!("{:?}", result);
+    assert_eq!(
+        result.unwrap_err().to_string(),
+        "Bitso API error code 0301: Unknown OrderBook FAKEORDERBOOK"
+    );
 }
 
 /// Test successful request to get available books
@@ -174,4 +178,16 @@ async fn test_trades() {
     let result = bitso.get_trades("btc_mxn").await;
     assert!(result.is_ok());
     println!("{:?}", result);
+}
+
+/// Test proper handling of errors external to the library
+#[tokio::test]
+async fn extern_errors() {
+    let bitso = Bitso::default().prefix("bad prefix").build();
+    let result = bitso.get_ticker("eth_mxn").await;
+    println!("{:?}", result);
+    assert_eq!(
+        result.unwrap_err().to_string(),
+        "builder error: relative URL without a base"
+    );
 }
