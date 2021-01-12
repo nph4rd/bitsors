@@ -3,6 +3,7 @@ use super::model::private::*;
 use super::model::public::*;
 use super::model::JSONResponse;
 use super::util::convert_map_to_string;
+use anyhow::Result;
 use hex::encode;
 use openssl::hash::MessageDigest;
 use openssl::pkey::PKey;
@@ -54,7 +55,6 @@ pub enum ApiError {
     Other(u16),
 }
 
-impl failure::Fail for ApiError {}
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -183,7 +183,7 @@ impl Bitso {
         url: &str,
         payload: Option<&Value>,
         api_type: ApiType,
-    ) -> Result<String, failure::Error> {
+    ) -> Result<String> {
         let mut url: Cow<str> = url.into();
 
         let mut headers = HeaderMap::new();
@@ -213,15 +213,10 @@ impl Bitso {
         if response.status().is_success() {
             match response.text().await {
                 Ok(text) => Ok(text),
-                Err(e) => Err(failure::err_msg(format!(
-                    "Error getting text out of response {}",
-                    e
-                ))),
+                Err(e) => Err(anyhow!("Error getting text out of response {}", e)),
             }
         } else {
-            Err(failure::Error::from(
-                ApiError::from_response(response).await,
-            ))
+            Err(anyhow!(ApiError::from_response(response).await))
         }
     }
 
@@ -231,7 +226,7 @@ impl Bitso {
         url: &str,
         params: &mut HashMap<String, String>,
         api_type: ApiType,
-    ) -> Result<String, failure::Error> {
+    ) -> Result<String> {
         if !params.is_empty() {
             let param: String = convert_map_to_string(params);
             let mut url_with_params = url.to_owned();
@@ -245,12 +240,7 @@ impl Bitso {
     }
 
     /// Makes post requests
-    async fn post(
-        &self,
-        url: &str,
-        payload: &Value,
-        api_type: ApiType,
-    ) -> Result<String, failure::Error> {
+    async fn post(&self, url: &str, payload: &Value, api_type: ApiType) -> Result<String> {
         self.internal_call(Method::POST, url, Some(payload), api_type)
             .await
     }
@@ -261,7 +251,7 @@ impl Bitso {
         url: &str,
         params: &mut HashMap<String, String>,
         api_type: ApiType,
-    ) -> Result<String, failure::Error> {
+    ) -> Result<String> {
         if !params.is_empty() {
             let param: String = convert_map_to_string(params);
             let mut url_with_params = url.to_owned();
@@ -276,10 +266,7 @@ impl Bitso {
     }
 
     /// Function to convert result to models
-    pub fn convert_result<'a, T: Deserialize<'a>>(
-        &self,
-        input: &'a str,
-    ) -> Result<T, failure::Error> {
+    pub fn convert_result<'a, T: Deserialize<'a>>(&self, input: &'a str) -> Result<T> {
         let result = serde_json::from_str::<T>(input).map_err(|e| {
             format_err!(
                 "Convert result failed, reason: {:?}; content: [{:?}]",
@@ -292,9 +279,7 @@ impl Bitso {
 
     /// Make a request to get available books
     /// https://bitso.com/api_info/#available-books
-    pub async fn get_available_books(
-        &self,
-    ) -> Result<JSONResponse<Vec<AvailableBook>>, failure::Error> {
+    pub async fn get_available_books(&self) -> Result<JSONResponse<Vec<AvailableBook>>> {
         let url = String::from("/v3/available_books/");
         let result = self.get(&url, &mut HashMap::new(), ApiType::Public).await?;
         self.convert_result::<JSONResponse<Vec<AvailableBook>>>(&result)
@@ -302,7 +287,7 @@ impl Bitso {
 
     /// Make a request to get ticker
     /// https://bitso.com/api_info/#ticker
-    pub async fn get_ticker(&self, book: &str) -> Result<JSONResponse<BookTicker>, failure::Error> {
+    pub async fn get_ticker(&self, book: &str) -> Result<JSONResponse<BookTicker>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
         let url = String::from("/v3/ticker/");
@@ -312,10 +297,7 @@ impl Bitso {
 
     /// Make a request to get a specific order book
     /// https://bitso.com/api_info/#order-book
-    pub async fn get_order_book(
-        &self,
-        book: &str,
-    ) -> Result<JSONResponse<OrderBookPayload>, failure::Error> {
+    pub async fn get_order_book(&self, book: &str) -> Result<JSONResponse<OrderBookPayload>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
         let url = String::from("/v3/order_book/");
@@ -325,7 +307,7 @@ impl Bitso {
 
     /// Make a request to get a specific trade
     /// https://bitso.com/api_info/#trades
-    pub async fn get_trades(&self, book: &str) -> Result<JSONResponse<Vec<Trade>>, failure::Error> {
+    pub async fn get_trades(&self, book: &str) -> Result<JSONResponse<Vec<Trade>>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
         let url = String::from("/v3/trades/");
@@ -335,18 +317,16 @@ impl Bitso {
 
     /// Make a request to get account status
     /// https://bitso.com/api_info#account-status
-    pub async fn get_account_status(
-        &self,
-    ) -> Result<JSONResponse<AccountStatusPayload>, failure::Error> {
+    pub async fn get_account_status(&self) -> Result<JSONResponse<AccountStatusPayload>> {
         let url = String::from("/v3/account_status/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -356,16 +336,16 @@ impl Bitso {
 
     /// Make a request to get account balance
     /// https://bitso.com/api_info#account-balance
-    pub async fn get_account_balance(&self) -> Result<JSONResponse<Balances>, failure::Error> {
+    pub async fn get_account_balance(&self) -> Result<JSONResponse<Balances>> {
         let url = String::from("/v3/balance/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -375,16 +355,16 @@ impl Bitso {
 
     /// Make a request to get fees
     /// https://bitso.com/api_info#fees
-    pub async fn get_fees(&self) -> Result<JSONResponse<FeesPayload>, failure::Error> {
+    pub async fn get_fees(&self) -> Result<JSONResponse<FeesPayload>> {
         let url = String::from("/v3/fees/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -394,16 +374,16 @@ impl Bitso {
 
     /// Make a request to get ledger
     /// https://bitso.com/api_info#ledger
-    pub async fn get_ledger(&self) -> Result<JSONResponse<Vec<LedgerInstance>>, failure::Error> {
+    pub async fn get_ledger(&self) -> Result<JSONResponse<Vec<LedgerInstance>>> {
         let url = String::from("/v3/ledger/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -413,18 +393,16 @@ impl Bitso {
 
     /// Make a request to get withdrawals
     /// https://bitso.com/api_info#withdrawals
-    pub async fn get_withdrawals(
-        &self,
-    ) -> Result<JSONResponse<Vec<WithdrawalsPayload>>, failure::Error> {
+    pub async fn get_withdrawals(&self) -> Result<JSONResponse<Vec<WithdrawalsPayload>>> {
         let url = String::from("/v3/withdrawals/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -434,16 +412,16 @@ impl Bitso {
 
     /// Make a request to get fundings
     /// https://bitso.com/api_info#fundings
-    pub async fn get_fundings(&self) -> Result<JSONResponse<Vec<FundingsPayload>>, failure::Error> {
+    pub async fn get_fundings(&self) -> Result<JSONResponse<Vec<FundingsPayload>>> {
         let url = String::from("/v3/fundings/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -453,18 +431,16 @@ impl Bitso {
 
     /// Make a request to get user trades
     /// https://bitso.com/api_info#user-trades
-    pub async fn get_user_trades(
-        &self,
-    ) -> Result<JSONResponse<Vec<UserTradesPayload>>, failure::Error> {
+    pub async fn get_user_trades(&self) -> Result<JSONResponse<Vec<UserTradesPayload>>> {
         let url = String::from("/v3/user_trades/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -477,16 +453,16 @@ impl Bitso {
     pub async fn get_order_trades(
         &self,
         oid: &str,
-    ) -> Result<JSONResponse<Vec<OrderTradesPayload>>, failure::Error> {
+    ) -> Result<JSONResponse<Vec<OrderTradesPayload>>> {
         let url = format!("/v3/order_trades/{}/", oid.to_owned());
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -499,16 +475,16 @@ impl Bitso {
     pub async fn get_open_orders(
         &self,
         book: &str,
-    ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>, failure::Error> {
+    ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>> {
         let url = format!("/v3/open_orders?book={}", book.to_owned());
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -521,16 +497,16 @@ impl Bitso {
     pub async fn get_lookup_orders(
         &self,
         oid: &str,
-    ) -> Result<JSONResponse<Vec<LookupOrdersPayload>>, failure::Error> {
+    ) -> Result<JSONResponse<Vec<LookupOrdersPayload>>> {
         let url = format!("/v3/orders/{}/", oid.to_owned());
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -540,19 +516,16 @@ impl Bitso {
 
     /// Make a request to cancel order
     /// https://bitso.com/api_info#cancel-order
-    pub async fn cancel_order(
-        &self,
-        oid: &str,
-    ) -> Result<JSONResponse<Vec<String>>, failure::Error> {
+    pub async fn cancel_order(&self, oid: &str) -> Result<JSONResponse<Vec<String>>> {
         let url = format!("/v3/orders/{}/", oid.to_owned());
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .delete(&url, &mut HashMap::new(), ApiType::Private)
@@ -568,7 +541,7 @@ impl Bitso {
         side: &str,
         r#type: &str,
         major: Option<&str>,
-    ) -> Result<JSONResponse<PlaceOrderPayload>, failure::Error> {
+    ) -> Result<JSONResponse<PlaceOrderPayload>> {
         let url = String::from("/v3/orders/");
         let params = json!({
             "book": book,
@@ -580,10 +553,10 @@ impl Bitso {
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self.post(&url, &params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<PlaceOrderPayload>>(&result)
@@ -594,7 +567,7 @@ impl Bitso {
     pub async fn get_funding_destination(
         &self,
         fund_currency: &str,
-    ) -> Result<JSONResponse<FundingDestination>, failure::Error> {
+    ) -> Result<JSONResponse<FundingDestination>> {
         let url = String::from("/v3/funding_destination/");
         let mut params = HashMap::new();
         params.insert("fund_currency".to_owned(), fund_currency.to_string());
@@ -602,10 +575,10 @@ impl Bitso {
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<FundingDestination>>(&result)
@@ -620,7 +593,7 @@ impl Bitso {
         address: &str,
         max_fee: Option<&str>,
         destination_tag: Option<&str>,
-    ) -> Result<JSONResponse<Withdrawal<CryptoWithdrawal>>, failure::Error> {
+    ) -> Result<JSONResponse<Withdrawal<CryptoWithdrawal>>> {
         let url = String::from("/v3/crypto_withdrawal/");
         let params = json!({
             "currency": currency,
@@ -633,10 +606,10 @@ impl Bitso {
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self.post(&url, &params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Withdrawal<CryptoWithdrawal>>>(&result)
@@ -652,7 +625,7 @@ impl Bitso {
         clabe: &str,
         notes_ref: Option<&str>,
         numeric_ref: Option<&str>,
-    ) -> Result<JSONResponse<Withdrawal<SPEIWithdrawal>>, failure::Error> {
+    ) -> Result<JSONResponse<Withdrawal<SPEIWithdrawal>>> {
         let url = String::from("/v3/spei_withdrawal/");
         let params = json!({
             "amount": amount,
@@ -666,10 +639,10 @@ impl Bitso {
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self.post(&url, &params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Withdrawal<SPEIWithdrawal>>>(&result)
@@ -677,16 +650,16 @@ impl Bitso {
 
     /// Make a request to get bank codes
     /// https://bitso.com/api_info#bank-codes
-    pub async fn get_bank_codes(&self) -> Result<JSONResponse<Vec<BankCode>>, failure::Error> {
+    pub async fn get_bank_codes(&self) -> Result<JSONResponse<Vec<BankCode>>> {
         let url = String::from("/v3/mx_bank_codes/");
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self
             .get(&url, &mut HashMap::new(), ApiType::Private)
@@ -703,7 +676,7 @@ impl Bitso {
         recipient_family_names: &str,
         card_number: &str,
         bank_code: &str,
-    ) -> Result<JSONResponse<Withdrawal<DebitWithdrawal>>, failure::Error> {
+    ) -> Result<JSONResponse<Withdrawal<DebitWithdrawal>>> {
         let url = String::from("/v3/debit_card_withdrawal/");
         let params = json!({
             "amount": amount,
@@ -716,10 +689,10 @@ impl Bitso {
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self.post(&url, &params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Withdrawal<DebitWithdrawal>>>(&result)
@@ -734,7 +707,7 @@ impl Bitso {
         recipient_family_names: &str,
         phone_number: &str,
         bank_code: &str,
-    ) -> Result<JSONResponse<Withdrawal<PhoneWithdrawal>>, failure::Error> {
+    ) -> Result<JSONResponse<Withdrawal<PhoneWithdrawal>>> {
         let url = String::from("/v3/phone_withdrawal/");
         let params = json!({
             "amount": amount,
@@ -747,10 +720,10 @@ impl Bitso {
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
-                    return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG));
+                    return Err(anyhow!(EMPTY_CREDENTIALS_MSG));
                 }
             }
-            None => return Err(failure::err_msg(EMPTY_CREDENTIALS_MSG)),
+            None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
         let result = self.post(&url, &params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Withdrawal<PhoneWithdrawal>>>(&result)
