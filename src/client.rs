@@ -45,7 +45,7 @@ pub enum ApiType {
 pub enum ApiError {
     /// A regular error is derived from
     /// Bitso's API responses. For more information
-    /// see: `https://bitso.com/api_info#error-codes`
+    /// see: <https://bitso.com/api_info#error-codes>
     #[serde(alias = "error")]
     RegularError {
         success: bool,
@@ -69,14 +69,14 @@ impl fmt::Display for ApiError {
 }
 
 /// A regular error from Bitso's API.
-/// See: `https://bitso.com/api_info#error-codes`
+/// See: <https://bitso.com/api_info#error-codes>
 #[derive(Debug, Deserialize)]
 pub struct RegularError {
     pub success: bool,
     pub error: ErrorDetails,
 }
 
-/// See: `https://bitso.com/api_info#error-codes`
+/// See: <https://bitso.com/api_info#error-codes>
 #[derive(Debug, Deserialize)]
 pub struct ErrorDetails {
     pub code: String,
@@ -135,7 +135,7 @@ impl Bitso {
     }
 
     /// Construct authorization headers.
-    /// See: `https://bitso.com/api_info#creating-and-signing-requests`
+    /// See: <https://bitso.com/api_info#creating-and-signing-requests>
     pub fn auth_headers(
         &self,
         method: &Method,
@@ -278,7 +278,7 @@ impl Bitso {
     }
 
     /// Make a request to get available books
-    /// https://bitso.com/api_info/#available-books
+    /// See: <https://bitso.com/api_info/#available-books>
     pub async fn get_available_books(&self) -> Result<JSONResponse<Vec<AvailableBook>>> {
         let url = String::from("/v3/available_books/");
         let result = self.get(&url, &mut HashMap::new(), ApiType::Public).await?;
@@ -286,7 +286,7 @@ impl Bitso {
     }
 
     /// Make a request to get ticker
-    /// https://bitso.com/api_info/#ticker
+    /// See: <https://bitso.com/api_info/#ticker>
     pub async fn get_ticker(&self, book: &str) -> Result<JSONResponse<BookTicker>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
@@ -296,7 +296,7 @@ impl Bitso {
     }
 
     /// Make a request to get a specific order book
-    /// https://bitso.com/api_info/#order-book
+    /// See: <https://bitso.com/api_info/#order-book>
     pub async fn get_order_book(&self, book: &str) -> Result<JSONResponse<OrderBookPayload>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
@@ -306,7 +306,7 @@ impl Bitso {
     }
 
     /// Make a request to get a specific trade
-    /// https://bitso.com/api_info/#trades
+    /// See: <https://bitso.com/api_info/#trades>
     pub async fn get_trades(&self, book: &str) -> Result<JSONResponse<Vec<Trade>>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
@@ -316,7 +316,7 @@ impl Bitso {
     }
 
     /// Make a request to get account status
-    /// https://bitso.com/api_info#account-status
+    /// See: <https://bitso.com/api_info#account-status>
     pub async fn get_account_status(&self) -> Result<JSONResponse<AccountStatusPayload>> {
         let url = String::from("/v3/account_status/");
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -335,7 +335,7 @@ impl Bitso {
     }
 
     /// Make a request to get account balance
-    /// https://bitso.com/api_info#account-balance
+    /// See: <https://bitso.com/api_info#account-balance>
     pub async fn get_account_balance(&self) -> Result<JSONResponse<Balances>> {
         let url = String::from("/v3/balance/");
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -354,7 +354,7 @@ impl Bitso {
     }
 
     /// Make a request to get fees
-    /// https://bitso.com/api_info#fees
+    /// See: <https://bitso.com/api_info#fees>
     pub async fn get_fees(&self) -> Result<JSONResponse<FeesPayload>> {
         let url = String::from("/v3/fees/");
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -373,7 +373,7 @@ impl Bitso {
     }
 
     /// Make a request to get ledger
-    /// https://bitso.com/api_info#ledger
+    /// See: <https://bitso.com/api_info#ledger>
     pub async fn get_ledger(&self) -> Result<JSONResponse<Vec<LedgerInstance>>> {
         let url = String::from("/v3/ledger/");
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -392,7 +392,7 @@ impl Bitso {
     }
 
     /// Make a request to get withdrawals
-    /// https://bitso.com/api_info#withdrawals
+    /// See: <https://bitso.com/api_info#withdrawals>
     pub async fn get_withdrawals(&self) -> Result<JSONResponse<Vec<WithdrawalsPayload>>> {
         let url = String::from("/v3/withdrawals/");
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -411,7 +411,7 @@ impl Bitso {
     }
 
     /// Make a request to get fundings
-    /// https://bitso.com/api_info#fundings
+    /// See: <https://bitso.com/api_info#fundings>
     pub async fn get_fundings(&self) -> Result<JSONResponse<Vec<FundingsPayload>>> {
         let url = String::from("/v3/fundings/");
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -430,7 +430,7 @@ impl Bitso {
     }
 
     /// Make a request to get user trades
-    /// https://bitso.com/api_info#user-trades
+    /// See: <https://bitso.com/api_info#user-trades>
     pub async fn get_user_trades(&self) -> Result<JSONResponse<Vec<UserTradesPayload>>> {
         let url = String::from("/v3/user_trades/");
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -449,7 +449,7 @@ impl Bitso {
     }
 
     /// Make a request to get order trades
-    /// https://bitso.com/api_info#order-trades
+    /// See: <https://bitso.com/api_info#order-trades>
     pub async fn get_order_trades(
         &self,
         oid: &str,
@@ -471,7 +471,7 @@ impl Bitso {
     }
 
     /// Make a request to get open orders
-    /// https://bitso.com/api_info#open-orders
+    /// See: <https://bitso.com/api_info#open-orders>
     pub async fn get_open_orders(
         &self,
         book: &str,
@@ -493,7 +493,7 @@ impl Bitso {
     }
 
     /// Make a request to get lookup orders
-    /// https://bitso.com/api_info#lookup-orders
+    /// See: <https://bitso.com/api_info#lookup-orders>
     pub async fn get_lookup_orders(
         &self,
         oid: &str,
@@ -515,7 +515,7 @@ impl Bitso {
     }
 
     /// Make a request to cancel order
-    /// https://bitso.com/api_info#cancel-order
+    /// See: <https://bitso.com/api_info#cancel-order>
     pub async fn cancel_order(&self, oid: &str) -> Result<JSONResponse<Vec<String>>> {
         let url = format!("/v3/orders/{}/", oid.to_owned());
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -534,7 +534,7 @@ impl Bitso {
     }
 
     /// Make a post request to place an order
-    /// https://bitso.com/api_info#place-an-order
+    /// See: <https://bitso.com/api_info#place-an-order>
     pub async fn place_order(
         &self,
         book: &str,
@@ -563,7 +563,7 @@ impl Bitso {
     }
 
     /// Make a request to get lookup orders
-    /// https://bitso.com/api_info#lookup-orders
+    /// See: <https://bitso.com/api_info#lookup-orders>
     pub async fn get_funding_destination(
         &self,
         fund_currency: &str,
@@ -585,7 +585,7 @@ impl Bitso {
     }
 
     /// Make a request to place an crypto withdrawal
-    /// https://bitso.com/api_info#crypto-withdrawals
+    /// See: <https://bitso.com/api_info#crypto-withdrawals>
     pub async fn crypto_withdrawal(
         &self,
         currency: &str,
@@ -616,7 +616,7 @@ impl Bitso {
     }
 
     /// Make a request to place a speri withdrawal
-    /// https://bitso.com/api_info#spei-withdrawal
+    /// See: <https://bitso.com/api_info#spei-withdrawal>
     pub async fn spei_withdrawal(
         &self,
         amount: &str,
@@ -649,7 +649,7 @@ impl Bitso {
     }
 
     /// Make a request to get bank codes
-    /// https://bitso.com/api_info#bank-codes
+    /// See: <https://bitso.com/api_info#bank-codes>
     pub async fn get_bank_codes(&self) -> Result<JSONResponse<Vec<BankCode>>> {
         let url = String::from("/v3/mx_bank_codes/");
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -668,7 +668,7 @@ impl Bitso {
     }
 
     /// Make a post request to make a debit-card ithdrawal
-    /// https://bitso.com/api_info#debit-card-withdrawal
+    /// See: <https://bitso.com/api_info#debit-card-withdrawal>
     pub async fn debit_card_withdrawal(
         &self,
         amount: &str,
@@ -699,7 +699,7 @@ impl Bitso {
     }
 
     /// Make a post request to make a phone-number withdrawal
-    /// https://bitso.com/api_info#phone-number-withdrawal
+    /// See: <https://bitso.com/api_info#phone-number-withdrawal>
     pub async fn phone_number_withdrawal(
         &self,
         amount: &str,
