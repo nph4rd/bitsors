@@ -297,9 +297,14 @@ impl Bitso {
 
     /// Make a request to get a specific order book
     /// See: <https://bitso.com/api_info/#order-book>
-    pub async fn get_order_book(&self, book: &str) -> Result<JSONResponse<OrderBookPayload>> {
+    pub async fn get_order_book(
+        &self,
+        book: &str,
+        aggregate: bool,
+    ) -> Result<JSONResponse<OrderBookPayload>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
+        params.insert("aggregate".to_owned(), aggregate.to_string());
         let url = String::from("/v3/order_book/");
         let result = self.get(&url, &mut params, ApiType::Public).await?;
         self.convert_result::<JSONResponse<OrderBookPayload>>(&result)

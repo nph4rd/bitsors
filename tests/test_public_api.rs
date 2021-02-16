@@ -103,7 +103,10 @@ async fn test_ticker() {
 #[tokio::test]
 async fn test_order_book() {
     let _mock = mock("GET", "/v3/order_book/")
-        .match_query(Matcher::UrlEncoded("book".into(), "btc_mxn".into()))
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("book".into(), "btc_mxn".into()),
+            Matcher::UrlEncoded("aggregate".into(), "false".into()),
+        ]))
         .with_status(200)
         .with_body(
             r#"{
@@ -140,7 +143,56 @@ async fn test_order_book() {
     let bitso = Bitso::default()
         .prefix(mockito::server_url().as_str())
         .build();
-    let result = bitso.get_order_book("btc_mxn").await;
+    let result = bitso.get_order_book("btc_mxn", false).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get order book, with aggregate data
+#[tokio::test]
+async fn test_order_book_with_optional_params() {
+    let _mock = mock("GET", "/v3/order_book/")
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("book".into(), "btc_mxn".into()),
+            Matcher::UrlEncoded("aggregate".into(), "true".into()),
+        ]))
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": {
+                "asks": [{
+                    "book": "btc_mxn",
+                    "price": "5632.24",
+                    "amount": "1.34491802"
+                },{
+                    "book": "btc_mxn",
+                    "price": "5633.44",
+                    "amount": "0.4259"
+                },{
+                    "book": "btc_mxn",
+                    "price": "5642.14",
+                    "amount": "1.21642"
+                }],
+                "bids": [{
+                    "book": "btc_mxn",
+                    "price": "6123.55",
+                    "amount": "1.12560000"
+                },{
+                    "book": "btc_mxn",
+                    "price": "6121.55",
+                    "amount": "2.23976"
+                }],
+                "updated_at": "2016-04-08T17:52:31.000+00:00",
+                "sequence": "27214"
+            }
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .build();
+    let result = bitso.get_order_book("btc_mxn", true).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
