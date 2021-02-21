@@ -227,7 +227,41 @@ async fn test_trades() {
     let bitso = Bitso::default()
         .prefix(mockito::server_url().as_str())
         .build();
-    let result = bitso.get_trades("btc_mxn").await;
+    let result = bitso.get_trades("btc_mxn", None, None, None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get trades with optional parameters
+#[tokio::test]
+async fn test_trades_with_optional_params() {
+    let _mock = mock("GET", "/v3/trades/")
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("book".into(), "btc_mxn".into()),
+            Matcher::UrlEncoded("marker".into(), "55844".into()),
+            Matcher::UrlEncoded("sort".into(), "asc".into()),
+            Matcher::UrlEncoded("limit".into(), "1".into()),
+        ]))
+        .match_query(Matcher::UrlEncoded("book".into(), "btc_mxn".into()))
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "book": "btc_mxn",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "amount": "0.02000000",
+                "maker_side": "buy",
+                "price": "5545.01",
+                "tid": 55845
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .build();
+    let result = bitso.get_trades("btc_mxn", Some(&55844), Some("asc"), Some(&1)).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }

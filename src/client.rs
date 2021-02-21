@@ -312,9 +312,18 @@ impl Bitso {
 
     /// Make a request to get a specific trade
     /// See: <https://bitso.com/api_info/#trades>
-    pub async fn get_trades(&self, book: &str) -> Result<JSONResponse<Vec<Trade>>> {
+    pub async fn get_trades(&self, book: &str, marker: Option<&u32>, sort: Option<&str>, limit: Option<&u8>) -> Result<JSONResponse<Vec<Trade>>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
+        if let Some(m) = marker {
+            params.insert("marker".to_owned(), m.to_string());
+        }
+        if let Some(s) = sort {
+            params.insert("sort".to_owned(), s.to_string());
+        }
+        if let Some(l) = limit {
+            params.insert("limit".to_owned(), l.to_string());
+        }
         let url = String::from("/v3/trades/");
         let result = self.get(&url, &mut params, ApiType::Public).await?;
         self.convert_result::<JSONResponse<Vec<Trade>>>(&result)
