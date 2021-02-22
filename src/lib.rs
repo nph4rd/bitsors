@@ -5,7 +5,7 @@
 //!
 //! __Disclaimer__: Some of the functionality for the private API is not covered in
 //! this wrapper.
-//! 
+//!
 //! Uncovered sections:
 //! * Mobile Phone Number Registration
 //! * Mobile Phone Number Verification

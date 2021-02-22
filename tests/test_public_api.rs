@@ -261,7 +261,9 @@ async fn test_trades_with_optional_params() {
     let bitso = Bitso::default()
         .prefix(mockito::server_url().as_str())
         .build();
-    let result = bitso.get_trades("btc_mxn", Some(&55844), Some("asc"), Some(&1)).await;
+    let result = bitso
+        .get_trades("btc_mxn", Some(&55844), Some("asc"), Some(&1))
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
