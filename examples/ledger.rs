@@ -17,6 +17,6 @@ async fn main() {
     let bitso = Bitso::default()
         .client_credentials_manager(client_credential)
         .build();
-    let result = bitso.get_ledger().await;
+    let result = bitso.get_ledger(None, None, None, None).await;
     println!("{:?}", result);
 }

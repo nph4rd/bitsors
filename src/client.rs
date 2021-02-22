@@ -394,8 +394,28 @@ impl Bitso {
 
     /// Make a request to get ledger
     /// See: <https://bitso.com/api_info#ledger>
-    pub async fn get_ledger(&self) -> Result<JSONResponse<Vec<LedgerInstance>>> {
-        let url = String::from("/v3/ledger/");
+    pub async fn get_ledger(
+        &self,
+        operation_type: Option<&str>,
+        marker: Option<&u32>,
+        sort: Option<&str>,
+        limit: Option<&u8>,
+    ) -> Result<JSONResponse<Vec<LedgerInstance>>> {
+        let mut url = String::from("/v3/ledger/");
+        let mut params = HashMap::new();
+        if let Some(o_t) = operation_type {
+            url.push_str(o_t);
+            url.push_str("/");
+        }
+        if let Some(m) = marker {
+            params.insert("marker".to_owned(), m.to_string());
+        }
+        if let Some(s) = sort {
+            params.insert("sort".to_owned(), s.to_string());
+        }
+        if let Some(l) = limit {
+            params.insert("limit".to_owned(), l.to_string());
+        }
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
@@ -405,9 +425,7 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<LedgerInstance>>>(&result)
     }
 

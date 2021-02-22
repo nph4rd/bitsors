@@ -251,7 +251,52 @@ async fn test_ledger() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_ledger().await;
+    let result = bitso.get_ledger(None, None, None, None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get ledger
+/// with operation_type = trades and optional
+/// parameters.
+#[tokio::test]
+async fn test_ledger_with_optional_params() {
+    let _mock = mock("GET", "/v3/ledger/trades/")
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("marker".into(), "51755".into()),
+            Matcher::UrlEncoded("sort".into(), "asc".into()),
+            Matcher::UrlEncoded("limit".into(), "1".into()),
+        ]))
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "eid": "c4ca4238a0b923820dcc509a6f75849b",
+                "operation": "trade",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "balance_updates": [{
+                    "currency": "btc",
+                    "amount": "-0.25232073"
+                }, {
+                    "currency": "mxn",
+                    "amount": "1013.540958479115"
+                }],
+                "details": {
+                    "tid": 51756,
+                    "oid": "wri0yg8miihs80ngk"
+                }
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso
+        .get_ledger(Some("trades"), Some(&51755), Some("asc"), Some(&1))
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
