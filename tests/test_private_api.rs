@@ -413,7 +413,142 @@ async fn test_withdrawals() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_withdrawals().await;
+    let result = bitso
+        .get_withdrawals(None, None, None, None, None, None, None)
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get withdrawals with optional params
+/// This tests the case where a list of WIDs is provided.
+#[tokio::test]
+async fn test_withdrawals_wids() {
+    let _mock = mock("GET", "/v3/withdrawals/")
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("wids".into(), "c5b8d7f0768ee91d3b33bee648318688,p4u8d7f0768ee91d3b33bee6483132i8".into()),
+        ]))
+        .with_status(200)
+        .with_body(r#"{
+            "success": true,
+            "payload": [{
+                "wid": "c5b8d7f0768ee91d3b33bee648318688",
+                "status": "pending",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "currency": "btc",
+                "method": "Bitcoin",
+                "amount": "0.48650929",
+                "details": {
+                    "withdrawal_address": "18MsnATiNiKLqUHDTRKjurwMg7inCrdNEp",
+                    "tx_hash": "d4f28394693e9fb5fffcaf730c11f32d1922e5837f76ca82189d3bfe30ded433"
+                }
+            }, {
+                "wid": "p4u8d7f0768ee91d3b33bee6483132i8",
+                "status": "complete",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "currency": "mxn",
+                "method": "sp",
+                "amount": "2612.70",
+                "details": {
+                    "beneficiary_name": "BERTRAND RUSSELL",
+                    "beneficiary_bank": "BANAMEX",
+                    "beneficiary_clabe": "002320700708015728",
+                    "numeric_reference": "99548",
+                    "concepto": "Por los 🌮 del viernes",
+                    "clave_rastreo": "BNET01001604080002076841",
+                    "cep": {
+                        "return": {
+                            "cda": {
+                                "cadenaOriginal": "||1|13062016|13062016|172053|40002|STP|Bitso - BERTRAND RUSSELL|40|646180115400000002|BIT140123U70|BANAMEX|BERTRAND RUSSELL|40|002320700708015728|ND|-|0.00|2612.70|00001000000401205824||",
+                                "conceptoPago": "-",
+                                "cuentaBeneficiario": "002320700708015728",
+                                "cuentaOrdenante": "646180115400000002",
+                                "fechaCaptura": "20160613",
+                                "fechaOperacion": "20160613",
+                                "hora": "17:08:42",
+                                "iva": "0.00",
+                                "monto": "2612.70",
+                                "nombreBeneficiario": "BERTRAND RUSSELL",
+                                "nombreInstBeneficiaria": "BANAMEX",
+                                "nombreInstOrdenante": "STP",
+                                "nombreOrdenante": "Bitso - Russell",
+                                "referenciaNumerica": "99548",
+                                "rfcCurpBeneficiario": "ND",
+                                "rfcCurpOrdenante": "BIT140123U70",
+                                "selloDigital": "cd7yUrnmUQ7CG6M+LX7WOZeizOpkTyMlEAunJaP2j5MAaNPZxy+vAJtgiVL73i1LNSrwK10eBb66Rh4\/RxU6AT2S03chQ\/BS1beknH5xPpGQg+wEXeANtnF2lp71lAD6QZ2O0NE4MIDvLhGGjTGklSP+2fS6joTAaV+tLbtrIp8JiR0MOX1rGPC5h+0ZHNvXQkcHJz3s68+iUAvDnQBiSu768b2C4zpHzteGEnJhU8sAdk83spiWogKALAVAuN4xfSXni7GTk9HObTTRdY+zehfWVPdE\/7uQSmMTzOKfPbQU02Jn\/5DdE3gYk6JZ5m70JsUSFBTF\/EVX8hhg0pu2iA==",
+                                "serieCertificado": "",
+                                "tipoOperacion": "C",
+                                "tipoPago": "1"
+                            },
+                            "estadoConsulta": "1",
+                            "url": "http:\/\/www.banxico.org.mx\/cep?i=90646&s=20150825&d=viAKjS0GVYB8qihmG9I%2B9O1VUvrR2td%2Fuo3GyVDn8vBp371tVx5ltRnk4QsWP6KP%2BQvlWjT%2BzfwWWTA3TMk4tg%3D%3D"
+                        }
+                    }
+                }
+            }]
+        }"#)
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso
+        .get_withdrawals(
+            None,
+            Some(vec![
+                "c5b8d7f0768ee91d3b33bee648318688",
+                "p4u8d7f0768ee91d3b33bee6483132i8",
+            ]),
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get withdrawals with optional params
+/// This tests the case where a WID is provided
+#[tokio::test]
+async fn test_withdrawals_wid() {
+    let _mock = mock("GET", "/v3/withdrawals/c5b8d7f0768ee91d3b33bee648318688/")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "wid": "c5b8d7f0768ee91d3b33bee648318688",
+                "status": "pending",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "currency": "btc",
+                "method": "Bitcoin",
+                "amount": "0.48650929",
+                "details": {
+                    "withdrawal_address": "18MsnATiNiKLqUHDTRKjurwMg7inCrdNEp",
+                    "tx_hash": "d4f28394693e9fb5fffcaf730c11f32d1922e5837f76ca82189d3bfe30ded433"
+                }
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso
+        .get_withdrawals(
+            Some("c5b8d7f0768ee91d3b33bee648318688"),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }

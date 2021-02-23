@@ -431,9 +431,43 @@ impl Bitso {
 
     /// Make a request to get withdrawals
     /// See: <https://bitso.com/api_info#withdrawals>
-    pub async fn get_withdrawals(&self) -> Result<JSONResponse<Vec<WithdrawalsPayload>>> {
-        let url = String::from("/v3/withdrawals/");
+    pub async fn get_withdrawals(
+        &self,
+        wid: Option<&str>,
+        wids: Option<Vec<&str>>,
+        origin_ids: Option<Vec<&str>>,
+        marker: Option<&u32>,
+        sort: Option<&str>,
+        limit: Option<&u8>,
+        method: Option<&str>,
+    ) -> Result<JSONResponse<Vec<WithdrawalsPayload>>> {
+        let mut url = String::from("/v3/withdrawals/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if let Some(w) = wid {
+            url.push_str(w);
+            url.push_str("/");
+        } else if let Some(ws) = wids {
+            let joined_wids = ws.join(",");
+            params.insert("wids".to_owned(), joined_wids.to_string());
+        } else if let Some(oids) = origin_ids {
+            let joined_origin_ids = oids.join(",");
+            params.insert("origin_ids".to_owned(), joined_origin_ids.to_string());
+        }
+
+        // Add generic optional parameters
+        if let Some(m) = marker {
+            params.insert("marker".to_owned(), m.to_string());
+        }
+        if let Some(s) = sort {
+            params.insert("sort".to_owned(), s.to_string());
+        }
+        if let Some(l) = limit {
+            params.insert("limit".to_owned(), l.to_string());
+        }
+        if let Some(m) = method {
+            params.insert("method".to_owned(), m.to_string());
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -442,9 +476,7 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<WithdrawalsPayload>>>(&result)
     }
 
