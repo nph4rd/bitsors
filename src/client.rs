@@ -55,6 +55,13 @@ pub enum ApiError {
     Other(u16),
 }
 
+/// Generic optional parameters for methods
+pub struct OptionalParams<'a> {
+    pub marker: Option<&'a u32>,
+    pub sort: Option<&'a str>,
+    pub limit: Option<&'a u8>,
+}
+
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -315,19 +322,17 @@ impl Bitso {
     pub async fn get_trades(
         &self,
         book: &str,
-        marker: Option<&u32>,
-        sort: Option<&str>,
-        limit: Option<&u8>,
+        optional_params: OptionalParams<'_>,
     ) -> Result<JSONResponse<Vec<Trade>>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
-        if let Some(m) = marker {
+        if let Some(m) = optional_params.marker {
             params.insert("marker".to_owned(), m.to_string());
         }
-        if let Some(s) = sort {
+        if let Some(s) = optional_params.sort {
             params.insert("sort".to_owned(), s.to_string());
         }
-        if let Some(l) = limit {
+        if let Some(l) = optional_params.limit {
             params.insert("limit".to_owned(), l.to_string());
         }
         let url = String::from("/v3/trades/");
@@ -394,26 +399,24 @@ impl Bitso {
 
     /// Make a request to get ledger
     /// See: <https://bitso.com/api_info#ledger>
-    pub async fn get_ledger(
+    pub async fn get_ledger<'a>(
         &self,
         operation_type: Option<&str>,
-        marker: Option<&u32>,
-        sort: Option<&str>,
-        limit: Option<&u8>,
+        optional_params: OptionalParams<'_>,
     ) -> Result<JSONResponse<Vec<LedgerInstance>>> {
         let mut url = String::from("/v3/ledger/");
         let mut params = HashMap::new();
         if let Some(o_t) = operation_type {
             url.push_str(o_t);
-            url.push_str("/");
+            url.push('/');
         }
-        if let Some(m) = marker {
+        if let Some(m) = optional_params.marker {
             params.insert("marker".to_owned(), m.to_string());
         }
-        if let Some(s) = sort {
+        if let Some(s) = optional_params.sort {
             params.insert("sort".to_owned(), s.to_string());
         }
-        if let Some(l) = limit {
+        if let Some(l) = optional_params.limit {
             params.insert("limit".to_owned(), l.to_string());
         }
         let client_credentials = self.client_credentials_manager.as_ref();
@@ -431,14 +434,12 @@ impl Bitso {
 
     /// Make a request to get withdrawals
     /// See: <https://bitso.com/api_info#withdrawals>
-    pub async fn get_withdrawals(
+    pub async fn get_withdrawals<'a>(
         &self,
         wid: Option<&str>,
         wids: Option<Vec<&str>>,
         origin_ids: Option<Vec<&str>>,
-        marker: Option<&u32>,
-        sort: Option<&str>,
-        limit: Option<&u8>,
+        optional_params: OptionalParams<'_>,
         method: Option<&str>,
     ) -> Result<JSONResponse<Vec<WithdrawalsPayload>>> {
         let mut url = String::from("/v3/withdrawals/");
@@ -446,23 +447,23 @@ impl Bitso {
         let client_credentials = self.client_credentials_manager.as_ref();
         if let Some(w) = wid {
             url.push_str(w);
-            url.push_str("/");
+            url.push('/');
         } else if let Some(ws) = wids {
             let joined_wids = ws.join(",");
-            params.insert("wids".to_owned(), joined_wids.to_string());
+            params.insert("wids".to_owned(), joined_wids);
         } else if let Some(oids) = origin_ids {
             let joined_origin_ids = oids.join(",");
-            params.insert("origin_ids".to_owned(), joined_origin_ids.to_string());
+            params.insert("origin_ids".to_owned(), joined_origin_ids);
         }
 
         // Add generic optional parameters
-        if let Some(m) = marker {
+        if let Some(m) = optional_params.marker {
             params.insert("marker".to_owned(), m.to_string());
         }
-        if let Some(s) = sort {
+        if let Some(s) = optional_params.sort {
             params.insert("sort".to_owned(), s.to_string());
         }
-        if let Some(l) = limit {
+        if let Some(l) = optional_params.limit {
             params.insert("limit".to_owned(), l.to_string());
         }
         if let Some(m) = method {

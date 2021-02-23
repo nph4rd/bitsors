@@ -1,7 +1,7 @@
 extern crate bitsors;
 extern crate mockito;
 
-use bitsors::client::Bitso;
+use bitsors::client::{Bitso, OptionalParams};
 use mockito::{mock, Matcher};
 
 /// Test unsuccesful request and error parsing
@@ -227,7 +227,12 @@ async fn test_trades() {
     let bitso = Bitso::default()
         .prefix(mockito::server_url().as_str())
         .build();
-    let result = bitso.get_trades("btc_mxn", None, None, None).await;
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
+    let result = bitso.get_trades("btc_mxn", optional_params).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -261,9 +266,12 @@ async fn test_trades_with_optional_params() {
     let bitso = Bitso::default()
         .prefix(mockito::server_url().as_str())
         .build();
-    let result = bitso
-        .get_trades("btc_mxn", Some(&55844), Some("asc"), Some(&1))
-        .await;
+    let optional_params = OptionalParams {
+        marker: Some(&55844),
+        sort: Some("asc"),
+        limit: Some(&1),
+    };
+    let result = bitso.get_trades("btc_mxn", optional_params).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }

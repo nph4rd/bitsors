@@ -4,7 +4,7 @@ extern crate mockito;
 extern crate lazy_static;
 
 use bitsors::auth::BitsoCredentials;
-use bitsors::client::Bitso;
+use bitsors::client::{Bitso, OptionalParams};
 use mockito::{mock, Matcher};
 use std::sync::Mutex;
 
@@ -251,7 +251,12 @@ async fn test_ledger() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_ledger(None, None, None, None).await;
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
+    let result = bitso.get_ledger(None, optional_params).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -294,9 +299,12 @@ async fn test_ledger_with_optional_params() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso
-        .get_ledger(Some("trades"), Some(&51755), Some("asc"), Some(&1))
-        .await;
+    let optional_params = OptionalParams {
+        marker: Some(&51755),
+        sort: Some("asc"),
+        limit: Some(&1),
+    };
+    let result = bitso.get_ledger(Some("trades"), optional_params).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -413,8 +421,13 @@ async fn test_withdrawals() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
     let result = bitso
-        .get_withdrawals(None, None, None, None, None, None, None)
+        .get_withdrawals(None, None, None, optional_params, None)
         .await;
     assert!(result.is_ok());
     println!("{:?}", result);
@@ -492,6 +505,11 @@ async fn test_withdrawals_wids() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
     let result = bitso
         .get_withdrawals(
             None,
@@ -500,9 +518,7 @@ async fn test_withdrawals_wids() {
                 "p4u8d7f0768ee91d3b33bee6483132i8",
             ]),
             None,
-            None,
-            None,
-            None,
+            optional_params,
             None,
         )
         .await;
@@ -538,14 +554,17 @@ async fn test_withdrawals_wid() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
     let result = bitso
         .get_withdrawals(
             Some("c5b8d7f0768ee91d3b33bee648318688"),
             None,
             None,
-            None,
-            None,
-            None,
+            optional_params,
             None,
         )
         .await;
@@ -643,7 +662,7 @@ async fn test_user_trades() {
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso.get_user_trades().await;
-    // assert!(result.is_ok());
+    assert!(result.is_ok());
     println!("{:?}", result);
 }
 
