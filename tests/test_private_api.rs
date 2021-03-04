@@ -574,6 +574,51 @@ async fn test_withdrawals_wid() {
 
 /// Test successful request to get fundings
 #[tokio::test]
+async fn test_fundings_fid() {
+    let _mock = mock("GET", "/v3/fundings/c5b8d7f0768ee91d3b33bee648318688/")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "fid": "c5b8d7f0768ee91d3b33bee648318688",
+                "status": "pending",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "currency": "btc",
+                "method": "btc",
+                "amount": "0.48650929",
+                "details": {
+                    "funding_address": "18MsnATiNiKLqUHDTRKjurwMg7inCrdNEp",
+                    "tx_hash": "d4f28394693e9fb5fffcaf730c11f32d1922e5837f76ca82189d3bfe30ded433"
+                }
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
+    let result = bitso
+        .get_fundings(
+            Some("c5b8d7f0768ee91d3b33bee648318688"),
+            None,
+            optional_params,
+            None,
+            None,
+        )
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get fundings with optional params
+#[tokio::test]
 async fn test_fundings() {
     let _mock = mock("GET", "/v3/fundings/")
         .with_status(200)
@@ -616,7 +661,14 @@ async fn test_fundings() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_fundings().await;
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
+    let result = bitso
+        .get_fundings(None, None, optional_params, None, None)
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }

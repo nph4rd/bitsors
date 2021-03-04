@@ -483,9 +483,43 @@ impl Bitso {
 
     /// Make a request to get fundings
     /// See: <https://bitso.com/api_info#fundings>
-    pub async fn get_fundings(&self) -> Result<JSONResponse<Vec<FundingsPayload>>> {
-        let url = String::from("/v3/fundings/");
+    pub async fn get_fundings<'a>(
+        &self,
+        fid: Option<&str>,
+        fids: Option<Vec<&str>>,
+        optional_params: OptionalParams<'_>,
+        txids: Option<Vec<&str>>,
+        method: Option<&str>,
+    ) -> Result<JSONResponse<Vec<FundingsPayload>>> {
+        let mut url = String::from("/v3/fundings/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if let Some(f) = fid {
+            url.push_str(f);
+            url.push('/');
+        } else if let Some(fs) = fids {
+            let joined_fids = fs.join("-");
+            url.push_str(&joined_fids[..]);
+            url.push('/');
+        }
+
+        // Add generic optional parameters
+        if let Some(m) = optional_params.marker {
+            params.insert("marker".to_owned(), m.to_string());
+        }
+        if let Some(s) = optional_params.sort {
+            params.insert("sort".to_owned(), s.to_string());
+        }
+        if let Some(l) = optional_params.limit {
+            params.insert("limit".to_owned(), l.to_string());
+        }
+        if let Some(m) = method {
+            params.insert("method".to_owned(), m.to_string());
+        }
+        if let Some(ts) = txids {
+            let joined_ts = ts.join(",");
+            params.insert("txids".to_owned(), joined_ts);
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -494,9 +528,7 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<FundingsPayload>>>(&result)
     }
 
