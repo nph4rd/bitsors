@@ -534,9 +534,36 @@ impl Bitso {
 
     /// Make a request to get user trades
     /// See: <https://bitso.com/api_info#user-trades>
-    pub async fn get_user_trades(&self) -> Result<JSONResponse<Vec<UserTradesPayload>>> {
-        let url = String::from("/v3/user_trades/");
+    pub async fn get_user_trades(
+        &self,
+        book: &str,
+        tid: Option<&str>,
+        tids: Option<Vec<&str>>,
+        optional_params: OptionalParams<'_>,
+    ) -> Result<JSONResponse<Vec<UserTradesPayload>>> {
+        let mut url = String::from("/v3/user_trades/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        params.insert("book".to_owned(), book.to_string());
+        if let Some(t) = tid {
+            url.push_str(t);
+            url.push('/');
+        } else if let Some(ts) = tids {
+            let joined_tids = ts.join("-");
+            url.push_str(&joined_tids[..]);
+            url.push('/');
+        }
+
+        // Add generic optional parameters
+        if let Some(m) = optional_params.marker {
+            params.insert("marker".to_owned(), m.to_string());
+        }
+        if let Some(s) = optional_params.sort {
+            params.insert("sort".to_owned(), s.to_string());
+        }
+        if let Some(l) = optional_params.limit {
+            params.insert("limit".to_owned(), l.to_string());
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -545,9 +572,7 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<UserTradesPayload>>>(&result)
     }
 

@@ -677,6 +677,7 @@ async fn test_fundings() {
 #[tokio::test]
 async fn test_user_trades() {
     let _mock = mock("GET", "/v3/user_trades/")
+        .match_query(Matcher::UrlEncoded("book".into(), "btc_mxn".into()))
         .with_status(200)
         .with_body(
             r#"{
@@ -713,7 +714,14 @@ async fn test_user_trades() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_user_trades().await;
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
+    let result = bitso
+        .get_user_trades("btc_mxn", None, None, optional_params)
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
