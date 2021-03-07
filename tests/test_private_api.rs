@@ -1063,7 +1063,34 @@ async fn test_cancel_order() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.cancel_order("cME2F7uZKJcMKXqU").await;
+    let result = bitso
+        .cancel_order(false, Some("cME2F7uZKJcMKXqU"), None, None)
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+// Test successful request to cancel_order
+#[tokio::test]
+async fn test_cancel_order_all() {
+    let _mock = mock("DELETE", "/v3/orders/all")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload":[
+                "cME2F7uZKJcMKXqU",
+                "FwllxXRKvcgJmyFy",
+                "zhDI9iBRglW9s9Vu"
+            ]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso.cancel_order(true, None, None, None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }

@@ -677,9 +677,28 @@ impl Bitso {
 
     /// Make a request to cancel order
     /// See: <https://bitso.com/api_info#cancel-order>
-    pub async fn cancel_order(&self, oid: &str) -> Result<JSONResponse<Vec<String>>> {
-        let url = format!("/v3/orders/{}/", oid.to_owned());
+    pub async fn cancel_order(
+        &self,
+        all: bool,
+        oid: Option<&str>,
+        oids: Option<Vec<&str>>,
+        origin_ids: Option<Vec<&str>>,
+    ) -> Result<JSONResponse<Vec<String>>> {
+        let mut url = String::from("/v3/orders/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if all {
+            url.push_str("all");
+        } else if let Some(o) = oid {
+            url.push_str(o);
+            url.push('/');
+        } else if let Some(os) = oids {
+            let joined_oids = os.join(",");
+            params.insert("oids".to_owned(), joined_oids);
+        } else if let Some(oids) = origin_ids {
+            let joined_origin_ids = oids.join(",");
+            params.insert("origin_ids".to_owned(), joined_origin_ids);
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
