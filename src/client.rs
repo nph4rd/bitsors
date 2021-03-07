@@ -580,9 +580,18 @@ impl Bitso {
     /// See: <https://bitso.com/api_info#order-trades>
     pub async fn get_order_trades(
         &self,
-        oid: &str,
+        oid: Option<&str>,
+        origin_id: Option<&str>,
     ) -> Result<JSONResponse<Vec<OrderTradesPayload>>> {
-        let url = format!("/v3/order_trades/{}/", oid.to_owned());
+        let mut url = String::from("/v3/order_trades");
+        if let Some(o) = oid {
+            url.push('/');
+            url.push_str(o);
+            url.push('/');
+        } else if let Some(or) = origin_id {
+            url.push_str("?origin_id=");
+            url.push_str(or);
+        }
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {

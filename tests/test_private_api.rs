@@ -770,7 +770,41 @@ async fn test_order_trades() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_order_trades("Jvqrschkgdkc1go3").await;
+    let result = bitso.get_order_trades(Some("Jvqrschkgdkc1go3"), None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get order_trades with origin_id
+#[tokio::test]
+async fn test_order_trades_origin_id() {
+    let _mock = mock("GET", "/v3/order_trades?origin_id=origin_id1")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                    "book": "btc_mxn",
+                    "major": "-0.25232073",
+                    "created_at": "2016-04-08T17:52:31.000+00:00",
+                    "minor": "1013.540958479115",
+                    "fees_amount": "-10.237787459385",
+                    "fees_currency": "mxn",
+                    "price": "4057.45",
+                    "tid": 51756,
+                    "oid": "Jvqrschkgdkc1go3",
+                    "origin_id": "origin_id1",
+                    "side": "sell",
+                    "make_side": "sell"
+                }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso.get_order_trades(None, Some("origin_id1")).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
