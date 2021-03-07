@@ -646,10 +646,23 @@ impl Bitso {
     /// See: <https://bitso.com/api_info#lookup-orders>
     pub async fn get_lookup_orders(
         &self,
-        oid: &str,
+        oid: Option<&str>,
+        oids: Option<Vec<&str>>,
+        origin_ids: Option<Vec<&str>>,
     ) -> Result<JSONResponse<Vec<LookupOrdersPayload>>> {
-        let url = format!("/v3/orders/{}/", oid.to_owned());
+        let mut url = String::from("/v3/orders/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if let Some(o) = oid {
+            url.push_str(o);
+            url.push('/');
+        } else if let Some(os) = oids {
+            let joined_oids = os.join(",");
+            params.insert("oids".to_owned(), joined_oids);
+        } else if let Some(oids) = origin_ids {
+            let joined_origin_ids = oids.join(",");
+            params.insert("origin_ids".to_owned(), joined_origin_ids);
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -658,9 +671,7 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<LookupOrdersPayload>>>(&result)
     }
 

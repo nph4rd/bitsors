@@ -17,6 +17,6 @@ async fn main() {
     let bitso = Bitso::default()
         .client_credentials_manager(client_credential)
         .build();
-    let result = bitso.get_lookup_orders("your_oid").await;
+    let result = bitso.get_lookup_orders(Some("your_oid"), None, None).await;
     println!("{:?}", result);
 }

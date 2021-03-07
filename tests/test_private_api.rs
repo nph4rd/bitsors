@@ -953,10 +953,14 @@ async fn test_open_orders_optional_params() {
     assert!(result.is_ok());
 }
 
-/// Test successful request to get lookup_orders
+/// Test successful request to get lookup_orders with optional params
 #[tokio::test]
-async fn test_lookup_orders() {
-    let _mock = mock("GET", "/v3/orders/543cr2v32a1h6844/")
+async fn test_lookup_orders_with_optional_params() {
+    let _mock = mock("GET", "/v3/orders/")
+        .match_query(Matcher::AllOf(vec![Matcher::UrlEncoded(
+            "oids".into(),
+            "543cr2v32a1h6844,qlbga6b600n3xta7a".into(),
+        )]))
         .with_status(200)
         .with_body(
             r#"{
@@ -993,7 +997,48 @@ async fn test_lookup_orders() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_lookup_orders("543cr2v32a1h6844").await;
+    let result = bitso
+        .get_lookup_orders(
+            None,
+            Some(vec!["543cr2v32a1h6844", "qlbga6b600n3xta7a"]),
+            None,
+        )
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get lookup_orders
+#[tokio::test]
+async fn test_lookup_orders() {
+    let _mock = mock("GET", "/v3/orders/543cr2v32a1h6844/")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "book": "btc_mxn",
+                "original_amount": "0.01000000",
+                "unfilled_amount": "0.00500000",
+                "original_value": "56.0",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "updated_at": "2016-04-08T17:52:51.000+00:00",
+                "price": "5600.00",
+                "oid": "543cr2v32a1h6844",
+                "side": "buy",
+                "status": "partial-fill",
+                "type": "limit"
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso
+        .get_lookup_orders(Some("543cr2v32a1h6844"), None, None)
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
