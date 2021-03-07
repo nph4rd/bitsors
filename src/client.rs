@@ -721,13 +721,23 @@ impl Bitso {
         side: &str,
         r#type: &str,
         major: Option<&str>,
+        minor: Option<&str>,
+        price: Option<&str>,
+        stop: Option<&str>,
+        time_in_force: Option<&str>,
+        origin_id: Option<&str>,
     ) -> Result<JSONResponse<PlaceOrderPayload>> {
         let url = String::from("/v3/orders/");
         let params = json!({
             "book": book,
             "side": side,
             "type": r#type,
-            "major": major
+            "major": major,
+            "minor": minor,
+            "price": price,
+            "stop": stop,
+            "time_in_force": time_in_force,
+            "origin_id": origin_id,
         });
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {

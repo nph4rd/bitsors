@@ -18,7 +18,17 @@ async fn main() {
         .client_credentials_manager(client_credential)
         .build();
     let result = bitso
-        .place_order("btc_mxn", "sell", "market", Some("major"))
+        .place_order(
+            "btc_mxn",
+            "sell",
+            "market",
+            Some("major"),
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
         .await;
     println!("{:?}", result);
 }

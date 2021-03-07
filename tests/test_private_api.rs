@@ -1114,7 +1114,17 @@ async fn test_place_order() {
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
     let result = bitso
-        .place_order("btc_mxn", "sell", "market", Some("0.0001"))
+        .place_order(
+            "btc_mxn",
+            "sell",
+            "market",
+            Some("0.0001"),
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
         .await;
     assert!(result.is_ok());
     println!("{:?}", result);
