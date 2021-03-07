@@ -1,7 +1,7 @@
 extern crate bitsors;
 
 use bitsors::auth::BitsoCredentials;
-use bitsors::client::Bitso;
+use bitsors::client::{Bitso, OptionalParams};
 
 #[tokio::main]
 async fn main() {
@@ -17,6 +17,13 @@ async fn main() {
     let bitso = Bitso::default()
         .client_credentials_manager(client_credential)
         .build();
-    let result = bitso.get_open_orders("btc_mxn").await;
+    let optional_params = OptionalParams {
+        marker: None,
+        sort: None,
+        limit: None,
+    };
+    let result = bitso
+        .get_open_orders(Some("btc_mxn"), optional_params)
+        .await;
     println!("{:?}", result);
 }

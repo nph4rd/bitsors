@@ -584,13 +584,14 @@ impl Bitso {
         origin_id: Option<&str>,
     ) -> Result<JSONResponse<Vec<OrderTradesPayload>>> {
         let mut url = String::from("/v3/order_trades");
+        let mut params = HashMap::new();
         if let Some(o) = oid {
             url.push('/');
             url.push_str(o);
             url.push('/');
-        } else if let Some(or) = origin_id {
-            url.push_str("?origin_id=");
-            url.push_str(or);
+        }
+        if let Some(or) = origin_id {
+            params.insert("origin_id".to_owned(), or.to_string());
         }
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -601,20 +602,33 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<OrderTradesPayload>>>(&result)
     }
 
     /// Make a request to get open orders
     /// See: <https://bitso.com/api_info#open-orders>
-    pub async fn get_open_orders(
+    pub async fn get_open_orders<'a>(
         &self,
-        book: &str,
+        book: Option<&str>,
+        optional_params: OptionalParams<'_>,
     ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>> {
-        let url = format!("/v3/open_orders?book={}", book.to_owned());
+        let url = String::from("/v3/open_orders");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if let Some(b) = book {
+            params.insert("book".to_owned(), b.to_string());
+        }
+        // Add generic optional parameters
+        if let Some(m) = optional_params.marker {
+            params.insert("marker".to_owned(), m.to_string());
+        }
+        if let Some(s) = optional_params.sort {
+            params.insert("sort".to_owned(), s.to_string());
+        }
+        if let Some(l) = optional_params.limit {
+            params.insert("limit".to_owned(), l.to_string());
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -623,9 +637,8 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        println!("{:?}", url);
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<OpenOrdersPayload>>>(&result)
     }
 
