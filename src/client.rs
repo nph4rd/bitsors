@@ -62,6 +62,17 @@ pub struct OptionalParams<'a> {
     pub limit: Option<&'a u8>,
 }
 
+/// Optional parameters for an order.
+/// For more info see: <https://bitso.com/api_info?python#place-an-order>
+pub struct OptionalOrderParams<'a> {
+    pub major: Option<&'a str>,
+    pub minor: Option<&'a str>,
+    pub price: Option<&'a str>,
+    pub stop: Option<&'a str>,
+    pub time_in_force: Option<&'a str>,
+    pub origin_id: Option<&'a str>,
+}
+
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -715,29 +726,24 @@ impl Bitso {
 
     /// Make a post request to place an order
     /// See: <https://bitso.com/api_info#place-an-order>
-    pub async fn place_order(
+    pub async fn place_order<'a>(
         &self,
         book: &str,
         side: &str,
         r#type: &str,
-        major: Option<&str>,
-        minor: Option<&str>,
-        price: Option<&str>,
-        stop: Option<&str>,
-        time_in_force: Option<&str>,
-        origin_id: Option<&str>,
+        optional_order_params: OptionalOrderParams<'_>,
     ) -> Result<JSONResponse<PlaceOrderPayload>> {
         let url = String::from("/v3/orders/");
         let params = json!({
             "book": book,
             "side": side,
             "type": r#type,
-            "major": major,
-            "minor": minor,
-            "price": price,
-            "stop": stop,
-            "time_in_force": time_in_force,
-            "origin_id": origin_id,
+            "major": optional_order_params.major,
+            "minor": optional_order_params.minor,
+            "price": optional_order_params.price,
+            "stop": optional_order_params.stop,
+            "time_in_force": optional_order_params.time_in_force,
+            "origin_id": optional_order_params.origin_id,
         });
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {

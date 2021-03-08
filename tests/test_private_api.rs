@@ -4,7 +4,7 @@ extern crate mockito;
 extern crate lazy_static;
 
 use bitsors::auth::BitsoCredentials;
-use bitsors::client::{Bitso, OptionalParams};
+use bitsors::client::{Bitso, OptionalOrderParams, OptionalParams};
 use mockito::{mock, Matcher};
 use std::sync::Mutex;
 
@@ -1113,18 +1113,16 @@ async fn test_place_order() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
+    let optional_order_params = OptionalOrderParams {
+        major: Some("0.0001"),
+        minor: None,
+        price: None,
+        stop: None,
+        time_in_force: None,
+        origin_id: None,
+    };
     let result = bitso
-        .place_order(
-            "btc_mxn",
-            "sell",
-            "market",
-            Some("0.0001"),
-            None,
-            None,
-            None,
-            None,
-            None,
-        )
+        .place_order("btc_mxn", "sell", "market", optional_order_params)
         .await;
     assert!(result.is_ok());
     println!("{:?}", result);
