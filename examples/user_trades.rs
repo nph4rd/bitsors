@@ -17,6 +17,6 @@ async fn main() {
     let bitso = Bitso::default()
         .client_credentials_manager(client_credential)
         .build();
-    let result = bitso.get_user_trades().await;
+    let result = bitso.get_user_trades("btc_mxn", None, None, None).await;
     println!("{:?}", result);
 }

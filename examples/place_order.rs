@@ -1,7 +1,7 @@
 extern crate bitsors;
 
 use bitsors::auth::BitsoCredentials;
-use bitsors::client::Bitso;
+use bitsors::client::{Bitso, OptionalOrderParams};
 
 #[tokio::main]
 async fn main() {
@@ -17,8 +17,16 @@ async fn main() {
     let bitso = Bitso::default()
         .client_credentials_manager(client_credential)
         .build();
+    let optional_order_params = OptionalOrderParams {
+        major: Some("0.0001"),
+        minor: None,
+        price: None,
+        stop: None,
+        time_in_force: None,
+        origin_id: None,
+    };
     let result = bitso
-        .place_order("btc_mxn", "sell", "market", Some("major"))
+        .place_order("btc_mxn", "sell", "market", Some(optional_order_params))
         .await;
     println!("{:?}", result);
 }

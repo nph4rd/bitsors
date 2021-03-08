@@ -17,6 +17,8 @@ async fn main() {
     let bitso = Bitso::default()
         .client_credentials_manager(client_credential)
         .build();
-    let result = bitso.cancel_order("your_oid").await;
+    let result = bitso
+        .cancel_order(false, Some("your_oid"), None, None)
+        .await;
     println!("{:?}", result);
 }

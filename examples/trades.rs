@@ -5,6 +5,6 @@ use bitsors::client::Bitso;
 #[tokio::main]
 async fn main() {
     let bitso = Bitso::default().build();
-    let result = bitso.get_trades("btc_mxn").await;
+    let result = bitso.get_trades("btc_mxn", None).await;
     println!("{:?}", result);
 }

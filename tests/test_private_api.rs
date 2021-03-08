@@ -4,7 +4,7 @@ extern crate mockito;
 extern crate lazy_static;
 
 use bitsors::auth::BitsoCredentials;
-use bitsors::client::Bitso;
+use bitsors::client::{Bitso, OptionalOrderParams, OptionalParams};
 use mockito::{mock, Matcher};
 use std::sync::Mutex;
 
@@ -251,7 +251,57 @@ async fn test_ledger() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_ledger().await;
+    let result = bitso.get_ledger(None, None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get ledger
+/// with operation_type = trades and optional
+/// parameters.
+#[tokio::test]
+async fn test_ledger_with_optional_params() {
+    let _mock = mock("GET", "/v3/ledger/trades/")
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("marker".into(), "51755".into()),
+            Matcher::UrlEncoded("sort".into(), "asc".into()),
+            Matcher::UrlEncoded("limit".into(), "1".into()),
+        ]))
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "eid": "c4ca4238a0b923820dcc509a6f75849b",
+                "operation": "trade",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "balance_updates": [{
+                    "currency": "btc",
+                    "amount": "-0.25232073"
+                }, {
+                    "currency": "mxn",
+                    "amount": "1013.540958479115"
+                }],
+                "details": {
+                    "tid": 51756,
+                    "oid": "wri0yg8miihs80ngk"
+                }
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let optional_params = OptionalParams {
+        marker: Some(&51755),
+        sort: Some("asc"),
+        limit: Some(&1),
+    };
+    let result = bitso
+        .get_ledger(Some("trades"), Some(optional_params))
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -368,12 +418,181 @@ async fn test_withdrawals() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_withdrawals().await;
+    let result = bitso.get_withdrawals(None, None, None, None, None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get withdrawals with optional params
+/// This tests the case where a list of WIDs is provided.
+#[tokio::test]
+async fn test_withdrawals_wids() {
+    let _mock = mock("GET", "/v3/withdrawals/")
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("wids".into(), "c5b8d7f0768ee91d3b33bee648318688,p4u8d7f0768ee91d3b33bee6483132i8".into()),
+        ]))
+        .with_status(200)
+        .with_body(r#"{
+            "success": true,
+            "payload": [{
+                "wid": "c5b8d7f0768ee91d3b33bee648318688",
+                "status": "pending",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "currency": "btc",
+                "method": "Bitcoin",
+                "amount": "0.48650929",
+                "details": {
+                    "withdrawal_address": "18MsnATiNiKLqUHDTRKjurwMg7inCrdNEp",
+                    "tx_hash": "d4f28394693e9fb5fffcaf730c11f32d1922e5837f76ca82189d3bfe30ded433"
+                }
+            }, {
+                "wid": "p4u8d7f0768ee91d3b33bee6483132i8",
+                "status": "complete",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "currency": "mxn",
+                "method": "sp",
+                "amount": "2612.70",
+                "details": {
+                    "beneficiary_name": "BERTRAND RUSSELL",
+                    "beneficiary_bank": "BANAMEX",
+                    "beneficiary_clabe": "002320700708015728",
+                    "numeric_reference": "99548",
+                    "concepto": "Por los 🌮 del viernes",
+                    "clave_rastreo": "BNET01001604080002076841",
+                    "cep": {
+                        "return": {
+                            "cda": {
+                                "cadenaOriginal": "||1|13062016|13062016|172053|40002|STP|Bitso - BERTRAND RUSSELL|40|646180115400000002|BIT140123U70|BANAMEX|BERTRAND RUSSELL|40|002320700708015728|ND|-|0.00|2612.70|00001000000401205824||",
+                                "conceptoPago": "-",
+                                "cuentaBeneficiario": "002320700708015728",
+                                "cuentaOrdenante": "646180115400000002",
+                                "fechaCaptura": "20160613",
+                                "fechaOperacion": "20160613",
+                                "hora": "17:08:42",
+                                "iva": "0.00",
+                                "monto": "2612.70",
+                                "nombreBeneficiario": "BERTRAND RUSSELL",
+                                "nombreInstBeneficiaria": "BANAMEX",
+                                "nombreInstOrdenante": "STP",
+                                "nombreOrdenante": "Bitso - Russell",
+                                "referenciaNumerica": "99548",
+                                "rfcCurpBeneficiario": "ND",
+                                "rfcCurpOrdenante": "BIT140123U70",
+                                "selloDigital": "cd7yUrnmUQ7CG6M+LX7WOZeizOpkTyMlEAunJaP2j5MAaNPZxy+vAJtgiVL73i1LNSrwK10eBb66Rh4\/RxU6AT2S03chQ\/BS1beknH5xPpGQg+wEXeANtnF2lp71lAD6QZ2O0NE4MIDvLhGGjTGklSP+2fS6joTAaV+tLbtrIp8JiR0MOX1rGPC5h+0ZHNvXQkcHJz3s68+iUAvDnQBiSu768b2C4zpHzteGEnJhU8sAdk83spiWogKALAVAuN4xfSXni7GTk9HObTTRdY+zehfWVPdE\/7uQSmMTzOKfPbQU02Jn\/5DdE3gYk6JZ5m70JsUSFBTF\/EVX8hhg0pu2iA==",
+                                "serieCertificado": "",
+                                "tipoOperacion": "C",
+                                "tipoPago": "1"
+                            },
+                            "estadoConsulta": "1",
+                            "url": "http:\/\/www.banxico.org.mx\/cep?i=90646&s=20150825&d=viAKjS0GVYB8qihmG9I%2B9O1VUvrR2td%2Fuo3GyVDn8vBp371tVx5ltRnk4QsWP6KP%2BQvlWjT%2BzfwWWTA3TMk4tg%3D%3D"
+                        }
+                    }
+                }
+            }]
+        }"#)
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso
+        .get_withdrawals(
+            None,
+            Some(vec![
+                "c5b8d7f0768ee91d3b33bee648318688",
+                "p4u8d7f0768ee91d3b33bee6483132i8",
+            ]),
+            None,
+            None,
+            None,
+        )
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get withdrawals with optional params
+/// This tests the case where a WID is provided
+#[tokio::test]
+async fn test_withdrawals_wid() {
+    let _mock = mock("GET", "/v3/withdrawals/c5b8d7f0768ee91d3b33bee648318688/")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "wid": "c5b8d7f0768ee91d3b33bee648318688",
+                "status": "pending",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "currency": "btc",
+                "method": "Bitcoin",
+                "amount": "0.48650929",
+                "details": {
+                    "withdrawal_address": "18MsnATiNiKLqUHDTRKjurwMg7inCrdNEp",
+                    "tx_hash": "d4f28394693e9fb5fffcaf730c11f32d1922e5837f76ca82189d3bfe30ded433"
+                }
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso
+        .get_withdrawals(
+            Some("c5b8d7f0768ee91d3b33bee648318688"),
+            None,
+            None,
+            None,
+            None,
+        )
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
 
 /// Test successful request to get fundings
+#[tokio::test]
+async fn test_fundings_fid() {
+    let _mock = mock("GET", "/v3/fundings/c5b8d7f0768ee91d3b33bee648318688/")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "fid": "c5b8d7f0768ee91d3b33bee648318688",
+                "status": "pending",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "currency": "btc",
+                "method": "btc",
+                "amount": "0.48650929",
+                "details": {
+                    "funding_address": "18MsnATiNiKLqUHDTRKjurwMg7inCrdNEp",
+                    "tx_hash": "d4f28394693e9fb5fffcaf730c11f32d1922e5837f76ca82189d3bfe30ded433"
+                }
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso
+        .get_fundings(
+            Some("c5b8d7f0768ee91d3b33bee648318688"),
+            None,
+            None,
+            None,
+            None,
+        )
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get fundings with optional params
 #[tokio::test]
 async fn test_fundings() {
     let _mock = mock("GET", "/v3/fundings/")
@@ -417,7 +636,7 @@ async fn test_fundings() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_fundings().await;
+    let result = bitso.get_fundings(None, None, None, None, None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -426,6 +645,7 @@ async fn test_fundings() {
 #[tokio::test]
 async fn test_user_trades() {
     let _mock = mock("GET", "/v3/user_trades/")
+        .match_query(Matcher::UrlEncoded("book".into(), "btc_mxn".into()))
         .with_status(200)
         .with_body(
             r#"{
@@ -462,8 +682,8 @@ async fn test_user_trades() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_user_trades().await;
-    // assert!(result.is_ok());
+    let result = bitso.get_user_trades("btc_mxn", None, None, None).await;
+    assert!(result.is_ok());
     println!("{:?}", result);
 }
 
@@ -511,7 +731,45 @@ async fn test_order_trades() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_order_trades("Jvqrschkgdkc1go3").await;
+    let result = bitso.get_order_trades(Some("Jvqrschkgdkc1go3"), None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get order_trades with origin_id
+#[tokio::test]
+async fn test_order_trades_origin_id() {
+    let _mock = mock("GET", "/v3/order_trades")
+        .with_status(200)
+        .match_query(Matcher::AllOf(vec![Matcher::UrlEncoded(
+            "origin_id".into(),
+            "origin_id1".into(),
+        )]))
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                    "book": "btc_mxn",
+                    "major": "-0.25232073",
+                    "created_at": "2016-04-08T17:52:31.000+00:00",
+                    "minor": "1013.540958479115",
+                    "fees_amount": "-10.237787459385",
+                    "fees_currency": "mxn",
+                    "price": "4057.45",
+                    "tid": 51756,
+                    "oid": "Jvqrschkgdkc1go3",
+                    "origin_id": "origin_id1",
+                    "side": "sell",
+                    "make_side": "sell"
+                }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso.get_order_trades(None, Some("origin_id1")).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -519,7 +777,75 @@ async fn test_order_trades() {
 /// Test successful request to get open_orders
 #[tokio::test]
 async fn test_open_orders() {
-    let _mock = mock("GET", "/v3/open_orders?book=btc_mxn")
+    let _mock = mock("GET", "/v3/open_orders")
+        .with_status(200)
+        .match_query(Matcher::AllOf(vec![Matcher::UrlEncoded(
+            "book".into(),
+            "btc_mxn".into(),
+        )]))
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "book": "btc_mxn",
+                "original_amount": "0.01000000",
+                "unfilled_amount": "0.00500000",
+                "original_value": "56.0",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "updated_at": "2016-04-08T17:52:51.000+00:00",
+                "price": "5600.00",
+                "oid": "543cr2v32a1h68443",
+                "origin_id": "origin_id1",
+                "side": "buy",
+                "status": "partial-fill",
+                "type": "limit"
+            }, {
+                "book": "btc_mxn",
+                "original_amount": "0.12680000",
+                "unfilled_amount": "0.12680000",
+                "original_value": "507.2",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "updated_at": "2016-04-08T17:52:41.000+00:00",
+                "price": "4000.00",
+                "oid": "qlbga6b600n3xta7",
+                "side": "sell",
+                "status": "open",
+                "type": "limit"
+            }, {
+                "book": "btc_mxn",
+                "original_amount": "1.12560000",
+                "unfilled_amount": "1.12560000",
+                "original_value": "6892.66788",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "updated_at": "2016-04-08T17:52:41.000+00:00",
+                "price": "6123.55",
+                "oid": "d71e3xy2lowndkfm",
+                "side": "sell",
+                "status": "open",
+                "type": "limit"
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso.get_open_orders(Some("btc_mxn"), None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get open_orders with optional params
+#[tokio::test]
+async fn test_open_orders_optional_params() {
+    let _mock = mock("GET", "/v3/open_orders")
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("book".into(), "btc_mxn".into()),
+            Matcher::UrlEncoded("marker".into(), "51755".into()),
+            Matcher::UrlEncoded("sort".into(), "asc".into()),
+            Matcher::UrlEncoded("limit".into(), "1".into()),
+        ]))
         .with_status(200)
         .with_body(
             r#"{
@@ -569,15 +895,26 @@ async fn test_open_orders() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_open_orders("btc_mxn").await;
-    assert!(result.is_ok());
+    let optional_params = OptionalParams {
+        marker: Some(&51755),
+        sort: Some("asc"),
+        limit: Some(&1),
+    };
+    let result = bitso
+        .get_open_orders(Some("btc_mxn"), Some(optional_params))
+        .await;
     println!("{:?}", result);
+    assert!(result.is_ok());
 }
 
-/// Test successful request to get lookup_orders
+/// Test successful request to get lookup_orders with optional params
 #[tokio::test]
-async fn test_lookup_orders() {
-    let _mock = mock("GET", "/v3/orders/543cr2v32a1h6844/")
+async fn test_lookup_orders_with_optional_params() {
+    let _mock = mock("GET", "/v3/orders/")
+        .match_query(Matcher::AllOf(vec![Matcher::UrlEncoded(
+            "oids".into(),
+            "543cr2v32a1h6844,qlbga6b600n3xta7a".into(),
+        )]))
         .with_status(200)
         .with_body(
             r#"{
@@ -614,7 +951,48 @@ async fn test_lookup_orders() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.get_lookup_orders("543cr2v32a1h6844").await;
+    let result = bitso
+        .get_lookup_orders(
+            None,
+            Some(vec!["543cr2v32a1h6844", "qlbga6b600n3xta7a"]),
+            None,
+        )
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to get lookup_orders
+#[tokio::test]
+async fn test_lookup_orders() {
+    let _mock = mock("GET", "/v3/orders/543cr2v32a1h6844/")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "book": "btc_mxn",
+                "original_amount": "0.01000000",
+                "unfilled_amount": "0.00500000",
+                "original_value": "56.0",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "updated_at": "2016-04-08T17:52:51.000+00:00",
+                "price": "5600.00",
+                "oid": "543cr2v32a1h6844",
+                "side": "buy",
+                "status": "partial-fill",
+                "type": "limit"
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso
+        .get_lookup_orders(Some("543cr2v32a1h6844"), None, None)
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -639,7 +1017,34 @@ async fn test_cancel_order() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let result = bitso.cancel_order("cME2F7uZKJcMKXqU").await;
+    let result = bitso
+        .cancel_order(false, Some("cME2F7uZKJcMKXqU"), None, None)
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+// Test successful request to cancel_order
+#[tokio::test]
+async fn test_cancel_order_all() {
+    let _mock = mock("DELETE", "/v3/orders/all")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload":[
+                "cME2F7uZKJcMKXqU",
+                "FwllxXRKvcgJmyFy",
+                "zhDI9iBRglW9s9Vu"
+            ]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let result = bitso.cancel_order(true, None, None, None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -662,8 +1067,39 @@ async fn test_place_order() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
+    let result = bitso.place_order("btc_mxn", "sell", "market", None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to place_with optional params
+#[tokio::test]
+async fn test_place_order_with_optional_params() {
+    let _mock = mock("POST", "/v3/orders/")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": {
+                "oid": "qlbga6b600n3xta7"
+            }
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let optional_order_params = OptionalOrderParams {
+        major: Some("0.0001"),
+        minor: None,
+        price: None,
+        stop: None,
+        time_in_force: None,
+        origin_id: None,
+    };
     let result = bitso
-        .place_order("btc_mxn", "sell", "market", Some("0.0001"))
+        .place_order("btc_mxn", "sell", "market", Some(optional_order_params))
         .await;
     assert!(result.is_ok());
     println!("{:?}", result);

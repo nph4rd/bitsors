@@ -13,6 +13,7 @@ use reqwest::Client;
 use reqwest::Method;
 use reqwest::StatusCode;
 use serde::de::Deserialize;
+use serde_json::map::Map;
 use serde_json::Value;
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -53,6 +54,24 @@ pub enum ApiError {
         message: String,
     },
     Other(u16),
+}
+
+/// Generic optional parameters for methods
+pub struct OptionalParams<'a> {
+    pub marker: Option<&'a u32>,
+    pub sort: Option<&'a str>,
+    pub limit: Option<&'a u8>,
+}
+
+/// Optional parameters for an order.
+/// For more info see: <https://bitso.com/api_info#place-an-order>
+pub struct OptionalOrderParams<'a> {
+    pub major: Option<&'a str>,
+    pub minor: Option<&'a str>,
+    pub price: Option<&'a str>,
+    pub stop: Option<&'a str>,
+    pub time_in_force: Option<&'a str>,
+    pub origin_id: Option<&'a str>,
 }
 
 impl fmt::Display for ApiError {
@@ -297,9 +316,14 @@ impl Bitso {
 
     /// Make a request to get a specific order book
     /// See: <https://bitso.com/api_info/#order-book>
-    pub async fn get_order_book(&self, book: &str) -> Result<JSONResponse<OrderBookPayload>> {
+    pub async fn get_order_book(
+        &self,
+        book: &str,
+        aggregate: bool,
+    ) -> Result<JSONResponse<OrderBookPayload>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
+        params.insert("aggregate".to_owned(), aggregate.to_string());
         let url = String::from("/v3/order_book/");
         let result = self.get(&url, &mut params, ApiType::Public).await?;
         self.convert_result::<JSONResponse<OrderBookPayload>>(&result)
@@ -307,9 +331,24 @@ impl Bitso {
 
     /// Make a request to get a specific trade
     /// See: <https://bitso.com/api_info/#trades>
-    pub async fn get_trades(&self, book: &str) -> Result<JSONResponse<Vec<Trade>>> {
+    pub async fn get_trades(
+        &self,
+        book: &str,
+        optional_params: Option<OptionalParams<'_>>,
+    ) -> Result<JSONResponse<Vec<Trade>>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
+        }
         let url = String::from("/v3/trades/");
         let result = self.get(&url, &mut params, ApiType::Public).await?;
         self.convert_result::<JSONResponse<Vec<Trade>>>(&result)
@@ -374,8 +413,28 @@ impl Bitso {
 
     /// Make a request to get ledger
     /// See: <https://bitso.com/api_info#ledger>
-    pub async fn get_ledger(&self) -> Result<JSONResponse<Vec<LedgerInstance>>> {
-        let url = String::from("/v3/ledger/");
+    pub async fn get_ledger<'a>(
+        &self,
+        operation_type: Option<&str>,
+        optional_params: Option<OptionalParams<'_>>,
+    ) -> Result<JSONResponse<Vec<LedgerInstance>>> {
+        let mut url = String::from("/v3/ledger/");
+        let mut params = HashMap::new();
+        if let Some(o_t) = operation_type {
+            url.push_str(o_t);
+            url.push('/');
+        }
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
+        }
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
@@ -385,17 +444,49 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<LedgerInstance>>>(&result)
     }
 
     /// Make a request to get withdrawals
     /// See: <https://bitso.com/api_info#withdrawals>
-    pub async fn get_withdrawals(&self) -> Result<JSONResponse<Vec<WithdrawalsPayload>>> {
-        let url = String::from("/v3/withdrawals/");
+    pub async fn get_withdrawals<'a>(
+        &self,
+        wid: Option<&str>,
+        wids: Option<Vec<&str>>,
+        origin_ids: Option<Vec<&str>>,
+        optional_params: Option<OptionalParams<'_>>,
+        method: Option<&str>,
+    ) -> Result<JSONResponse<Vec<WithdrawalsPayload>>> {
+        let mut url = String::from("/v3/withdrawals/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if let Some(w) = wid {
+            url.push_str(w);
+            url.push('/');
+        } else if let Some(ws) = wids {
+            let joined_wids = ws.join(",");
+            params.insert("wids".to_owned(), joined_wids);
+        } else if let Some(oids) = origin_ids {
+            let joined_origin_ids = oids.join(",");
+            params.insert("origin_ids".to_owned(), joined_origin_ids);
+        }
+
+        // Add generic optional parameters
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
+        }
+        if let Some(m) = method {
+            params.insert("method".to_owned(), m.to_string());
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -404,17 +495,51 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<WithdrawalsPayload>>>(&result)
     }
 
     /// Make a request to get fundings
     /// See: <https://bitso.com/api_info#fundings>
-    pub async fn get_fundings(&self) -> Result<JSONResponse<Vec<FundingsPayload>>> {
-        let url = String::from("/v3/fundings/");
+    pub async fn get_fundings<'a>(
+        &self,
+        fid: Option<&str>,
+        fids: Option<Vec<&str>>,
+        optional_params: Option<OptionalParams<'_>>,
+        txids: Option<Vec<&str>>,
+        method: Option<&str>,
+    ) -> Result<JSONResponse<Vec<FundingsPayload>>> {
+        let mut url = String::from("/v3/fundings/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if let Some(f) = fid {
+            url.push_str(f);
+            url.push('/');
+        } else if let Some(fs) = fids {
+            let joined_fids = fs.join("-");
+            url.push_str(&joined_fids[..]);
+            url.push('/');
+        }
+
+        // Add generic optional parameters
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
+        }
+        if let Some(m) = method {
+            params.insert("method".to_owned(), m.to_string());
+        }
+        if let Some(ts) = txids {
+            let joined_ts = ts.join(",");
+            params.insert("txids".to_owned(), joined_ts);
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -423,17 +548,44 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<FundingsPayload>>>(&result)
     }
 
     /// Make a request to get user trades
     /// See: <https://bitso.com/api_info#user-trades>
-    pub async fn get_user_trades(&self) -> Result<JSONResponse<Vec<UserTradesPayload>>> {
-        let url = String::from("/v3/user_trades/");
+    pub async fn get_user_trades(
+        &self,
+        book: &str,
+        tid: Option<&str>,
+        tids: Option<Vec<&str>>,
+        optional_params: Option<OptionalParams<'_>>,
+    ) -> Result<JSONResponse<Vec<UserTradesPayload>>> {
+        let mut url = String::from("/v3/user_trades/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        params.insert("book".to_owned(), book.to_string());
+        if let Some(t) = tid {
+            url.push_str(t);
+            url.push('/');
+        } else if let Some(ts) = tids {
+            let joined_tids = ts.join("-");
+            url.push_str(&joined_tids[..]);
+            url.push('/');
+        }
+
+        // Add generic optional parameters
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -442,9 +594,7 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<UserTradesPayload>>>(&result)
     }
 
@@ -452,9 +602,19 @@ impl Bitso {
     /// See: <https://bitso.com/api_info#order-trades>
     pub async fn get_order_trades(
         &self,
-        oid: &str,
+        oid: Option<&str>,
+        origin_id: Option<&str>,
     ) -> Result<JSONResponse<Vec<OrderTradesPayload>>> {
-        let url = format!("/v3/order_trades/{}/", oid.to_owned());
+        let mut url = String::from("/v3/order_trades");
+        let mut params = HashMap::new();
+        if let Some(o) = oid {
+            url.push('/');
+            url.push_str(o);
+            url.push('/');
+        }
+        if let Some(or) = origin_id {
+            params.insert("origin_id".to_owned(), or.to_string());
+        }
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
@@ -464,20 +624,35 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<OrderTradesPayload>>>(&result)
     }
 
     /// Make a request to get open orders
     /// See: <https://bitso.com/api_info#open-orders>
-    pub async fn get_open_orders(
+    pub async fn get_open_orders<'a>(
         &self,
-        book: &str,
+        book: Option<&str>,
+        optional_params: Option<OptionalParams<'_>>,
     ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>> {
-        let url = format!("/v3/open_orders?book={}", book.to_owned());
+        let url = String::from("/v3/open_orders");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if let Some(b) = book {
+            params.insert("book".to_owned(), b.to_string());
+        }
+        // Add generic optional parameters
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -486,9 +661,7 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<OpenOrdersPayload>>>(&result)
     }
 
@@ -496,10 +669,23 @@ impl Bitso {
     /// See: <https://bitso.com/api_info#lookup-orders>
     pub async fn get_lookup_orders(
         &self,
-        oid: &str,
+        oid: Option<&str>,
+        oids: Option<Vec<&str>>,
+        origin_ids: Option<Vec<&str>>,
     ) -> Result<JSONResponse<Vec<LookupOrdersPayload>>> {
-        let url = format!("/v3/orders/{}/", oid.to_owned());
+        let mut url = String::from("/v3/orders/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if let Some(o) = oid {
+            url.push_str(o);
+            url.push('/');
+        } else if let Some(os) = oids {
+            let joined_oids = os.join(",");
+            params.insert("oids".to_owned(), joined_oids);
+        } else if let Some(oids) = origin_ids {
+            let joined_origin_ids = oids.join(",");
+            params.insert("origin_ids".to_owned(), joined_origin_ids);
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -508,17 +694,34 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        let result = self
-            .get(&url, &mut HashMap::new(), ApiType::Private)
-            .await?;
+        let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<LookupOrdersPayload>>>(&result)
     }
 
     /// Make a request to cancel order
     /// See: <https://bitso.com/api_info#cancel-order>
-    pub async fn cancel_order(&self, oid: &str) -> Result<JSONResponse<Vec<String>>> {
-        let url = format!("/v3/orders/{}/", oid.to_owned());
+    pub async fn cancel_order(
+        &self,
+        all: bool,
+        oid: Option<&str>,
+        oids: Option<Vec<&str>>,
+        origin_ids: Option<Vec<&str>>,
+    ) -> Result<JSONResponse<Vec<String>>> {
+        let mut url = String::from("/v3/orders/");
+        let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
+        if all {
+            url.push_str("all");
+        } else if let Some(o) = oid {
+            url.push_str(o);
+            url.push('/');
+        } else if let Some(os) = oids {
+            let joined_oids = os.join(",");
+            params.insert("oids".to_owned(), joined_oids);
+        } else if let Some(oids) = origin_ids {
+            let joined_origin_ids = oids.join(",");
+            params.insert("origin_ids".to_owned(), joined_origin_ids);
+        }
         match client_credentials {
             Some(c) => {
                 if c.get_key().is_empty() {
@@ -535,20 +738,41 @@ impl Bitso {
 
     /// Make a post request to place an order
     /// See: <https://bitso.com/api_info#place-an-order>
-    pub async fn place_order(
+    pub async fn place_order<'a>(
         &self,
         book: &str,
         side: &str,
         r#type: &str,
-        major: Option<&str>,
+        optional_order_params: Option<OptionalOrderParams<'_>>,
     ) -> Result<JSONResponse<PlaceOrderPayload>> {
         let url = String::from("/v3/orders/");
-        let params = json!({
-            "book": book,
-            "side": side,
-            "type": r#type,
-            "major": major
-        });
+        // Create map for parameters
+        let mut params_map = Map::new();
+        params_map.insert("book".to_owned(), Value::String(book.to_owned()));
+        params_map.insert("side".to_owned(), Value::String(side.to_owned()));
+        params_map.insert("type".to_owned(), Value::String(r#type.to_owned()));
+        // Add optional params
+        if let Some(op) = optional_order_params {
+            if let Some(ma) = op.major {
+                params_map.insert("major".to_owned(), Value::String(ma.to_owned()));
+            }
+            if let Some(mi) = op.minor {
+                params_map.insert("minor".to_owned(), Value::String(mi.to_owned()));
+            }
+            if let Some(p) = op.price {
+                params_map.insert("price".to_owned(), Value::String(p.to_owned()));
+            }
+            if let Some(s) = op.stop {
+                params_map.insert("stop".to_owned(), Value::String(s.to_owned()));
+            }
+            if let Some(tif) = op.time_in_force {
+                params_map.insert("time_in_force".to_owned(), Value::String(tif.to_owned()));
+            }
+            if let Some(oi) = op.origin_id {
+                params_map.insert("origin_id".to_owned(), Value::String(oi.to_owned()));
+            }
+        }
+        let params = json!(params_map);
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
@@ -595,13 +819,18 @@ impl Bitso {
         destination_tag: Option<&str>,
     ) -> Result<JSONResponse<Withdrawal<CryptoWithdrawal>>> {
         let url = String::from("/v3/crypto_withdrawal/");
-        let params = json!({
-            "currency": currency,
-            "amount": amount,
-            "address": address,
-            "max_fee": max_fee,
-            "destination_tag": destination_tag,
-        });
+        let mut params_map = Map::new();
+        params_map.insert("currency".to_owned(), Value::String(currency.to_owned()));
+        params_map.insert("amount".to_owned(), Value::String(amount.to_owned()));
+        params_map.insert("address".to_owned(), Value::String(address.to_owned()));
+        // Add optional params
+        if let Some(mf) = max_fee {
+            params_map.insert("max_fee".to_owned(), Value::String(mf.to_owned()));
+        }
+        if let Some(dt) = destination_tag {
+            params_map.insert("destination_tag".to_owned(), Value::String(dt.to_owned()));
+        }
+        let params = json!(params_map);
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
@@ -627,14 +856,25 @@ impl Bitso {
         numeric_ref: Option<&str>,
     ) -> Result<JSONResponse<Withdrawal<SPEIWithdrawal>>> {
         let url = String::from("/v3/spei_withdrawal/");
-        let params = json!({
-            "amount": amount,
-            "recipient_given_names": recipient_given_names,
-            "recipient_family_names": recipient_family_names,
-            "clabe": clabe,
-            "notes_ref": notes_ref,
-            "numeric_ref": numeric_ref
-        });
+        let mut params_map = Map::new();
+        params_map.insert("amount".to_owned(), Value::String(amount.to_owned()));
+        params_map.insert(
+            "recipient_given_names".to_owned(),
+            Value::String(recipient_given_names.to_owned()),
+        );
+        params_map.insert(
+            "recipient_family_names".to_owned(),
+            Value::String(recipient_family_names.to_owned()),
+        );
+        params_map.insert("clabe".to_owned(), Value::String(clabe.to_owned()));
+        // Add optional params
+        if let Some(nor) = notes_ref {
+            params_map.insert("notes_ref".to_owned(), Value::String(nor.to_owned()));
+        }
+        if let Some(nur) = numeric_ref {
+            params_map.insert("numeric_ref".to_owned(), Value::String(nur.to_owned()));
+        }
+        let params = json!(params_map);
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
