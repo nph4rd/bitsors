@@ -819,13 +819,18 @@ impl Bitso {
         destination_tag: Option<&str>,
     ) -> Result<JSONResponse<Withdrawal<CryptoWithdrawal>>> {
         let url = String::from("/v3/crypto_withdrawal/");
-        let params = json!({
-            "currency": currency,
-            "amount": amount,
-            "address": address,
-            "max_fee": max_fee,
-            "destination_tag": destination_tag,
-        });
+        let mut params_map = Map::new();
+        params_map.insert("currency".to_owned(), Value::String(currency.to_owned()));
+        params_map.insert("amount".to_owned(), Value::String(amount.to_owned()));
+        params_map.insert("address".to_owned(), Value::String(address.to_owned()));
+        // Add optional params
+        if let Some(mf) = max_fee {
+            params_map.insert("max_fee".to_owned(), Value::String(mf.to_owned()));
+        }
+        if let Some(dt) = destination_tag {
+            params_map.insert("destination_tag".to_owned(), Value::String(dt.to_owned()));
+        }
+        let params = json!(params_map);
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
@@ -851,14 +856,25 @@ impl Bitso {
         numeric_ref: Option<&str>,
     ) -> Result<JSONResponse<Withdrawal<SPEIWithdrawal>>> {
         let url = String::from("/v3/spei_withdrawal/");
-        let params = json!({
-            "amount": amount,
-            "recipient_given_names": recipient_given_names,
-            "recipient_family_names": recipient_family_names,
-            "clabe": clabe,
-            "notes_ref": notes_ref,
-            "numeric_ref": numeric_ref
-        });
+        let mut params_map = Map::new();
+        params_map.insert("amount".to_owned(), Value::String(amount.to_owned()));
+        params_map.insert(
+            "recipient_given_names".to_owned(),
+            Value::String(recipient_given_names.to_owned()),
+        );
+        params_map.insert(
+            "recipient_family_names".to_owned(),
+            Value::String(recipient_family_names.to_owned()),
+        );
+        params_map.insert("clabe".to_owned(), Value::String(clabe.to_owned()));
+        // Add optional params
+        if let Some(nor) = notes_ref {
+            params_map.insert("notes_ref".to_owned(), Value::String(nor.to_owned()));
+        }
+        if let Some(nur) = numeric_ref {
+            params_map.insert("numeric_ref".to_owned(), Value::String(nur.to_owned()));
+        }
+        let params = json!(params_map);
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {
