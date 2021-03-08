@@ -13,6 +13,7 @@ use reqwest::Client;
 use reqwest::Method;
 use reqwest::StatusCode;
 use serde::de::Deserialize;
+use serde_json::map::Map;
 use serde_json::Value;
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -333,18 +334,20 @@ impl Bitso {
     pub async fn get_trades(
         &self,
         book: &str,
-        optional_params: OptionalParams<'_>,
+        optional_params: Option<OptionalParams<'_>>,
     ) -> Result<JSONResponse<Vec<Trade>>> {
         let mut params = HashMap::new();
         params.insert("book".to_owned(), book.to_string());
-        if let Some(m) = optional_params.marker {
-            params.insert("marker".to_owned(), m.to_string());
-        }
-        if let Some(s) = optional_params.sort {
-            params.insert("sort".to_owned(), s.to_string());
-        }
-        if let Some(l) = optional_params.limit {
-            params.insert("limit".to_owned(), l.to_string());
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
         }
         let url = String::from("/v3/trades/");
         let result = self.get(&url, &mut params, ApiType::Public).await?;
@@ -413,7 +416,7 @@ impl Bitso {
     pub async fn get_ledger<'a>(
         &self,
         operation_type: Option<&str>,
-        optional_params: OptionalParams<'_>,
+        optional_params: Option<OptionalParams<'_>>,
     ) -> Result<JSONResponse<Vec<LedgerInstance>>> {
         let mut url = String::from("/v3/ledger/");
         let mut params = HashMap::new();
@@ -421,14 +424,16 @@ impl Bitso {
             url.push_str(o_t);
             url.push('/');
         }
-        if let Some(m) = optional_params.marker {
-            params.insert("marker".to_owned(), m.to_string());
-        }
-        if let Some(s) = optional_params.sort {
-            params.insert("sort".to_owned(), s.to_string());
-        }
-        if let Some(l) = optional_params.limit {
-            params.insert("limit".to_owned(), l.to_string());
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
         }
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
@@ -450,7 +455,7 @@ impl Bitso {
         wid: Option<&str>,
         wids: Option<Vec<&str>>,
         origin_ids: Option<Vec<&str>>,
-        optional_params: OptionalParams<'_>,
+        optional_params: Option<OptionalParams<'_>>,
         method: Option<&str>,
     ) -> Result<JSONResponse<Vec<WithdrawalsPayload>>> {
         let mut url = String::from("/v3/withdrawals/");
@@ -468,14 +473,16 @@ impl Bitso {
         }
 
         // Add generic optional parameters
-        if let Some(m) = optional_params.marker {
-            params.insert("marker".to_owned(), m.to_string());
-        }
-        if let Some(s) = optional_params.sort {
-            params.insert("sort".to_owned(), s.to_string());
-        }
-        if let Some(l) = optional_params.limit {
-            params.insert("limit".to_owned(), l.to_string());
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
         }
         if let Some(m) = method {
             params.insert("method".to_owned(), m.to_string());
@@ -498,7 +505,7 @@ impl Bitso {
         &self,
         fid: Option<&str>,
         fids: Option<Vec<&str>>,
-        optional_params: OptionalParams<'_>,
+        optional_params: Option<OptionalParams<'_>>,
         txids: Option<Vec<&str>>,
         method: Option<&str>,
     ) -> Result<JSONResponse<Vec<FundingsPayload>>> {
@@ -515,14 +522,16 @@ impl Bitso {
         }
 
         // Add generic optional parameters
-        if let Some(m) = optional_params.marker {
-            params.insert("marker".to_owned(), m.to_string());
-        }
-        if let Some(s) = optional_params.sort {
-            params.insert("sort".to_owned(), s.to_string());
-        }
-        if let Some(l) = optional_params.limit {
-            params.insert("limit".to_owned(), l.to_string());
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
         }
         if let Some(m) = method {
             params.insert("method".to_owned(), m.to_string());
@@ -550,7 +559,7 @@ impl Bitso {
         book: &str,
         tid: Option<&str>,
         tids: Option<Vec<&str>>,
-        optional_params: OptionalParams<'_>,
+        optional_params: Option<OptionalParams<'_>>,
     ) -> Result<JSONResponse<Vec<UserTradesPayload>>> {
         let mut url = String::from("/v3/user_trades/");
         let mut params = HashMap::new();
@@ -566,14 +575,16 @@ impl Bitso {
         }
 
         // Add generic optional parameters
-        if let Some(m) = optional_params.marker {
-            params.insert("marker".to_owned(), m.to_string());
-        }
-        if let Some(s) = optional_params.sort {
-            params.insert("sort".to_owned(), s.to_string());
-        }
-        if let Some(l) = optional_params.limit {
-            params.insert("limit".to_owned(), l.to_string());
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
         }
         match client_credentials {
             Some(c) => {
@@ -622,7 +633,7 @@ impl Bitso {
     pub async fn get_open_orders<'a>(
         &self,
         book: Option<&str>,
-        optional_params: OptionalParams<'_>,
+        optional_params: Option<OptionalParams<'_>>,
     ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>> {
         let url = String::from("/v3/open_orders");
         let mut params = HashMap::new();
@@ -631,14 +642,16 @@ impl Bitso {
             params.insert("book".to_owned(), b.to_string());
         }
         // Add generic optional parameters
-        if let Some(m) = optional_params.marker {
-            params.insert("marker".to_owned(), m.to_string());
-        }
-        if let Some(s) = optional_params.sort {
-            params.insert("sort".to_owned(), s.to_string());
-        }
-        if let Some(l) = optional_params.limit {
-            params.insert("limit".to_owned(), l.to_string());
+        if let Some(op) = optional_params {
+            if let Some(m) = op.marker {
+                params.insert("marker".to_owned(), m.to_string());
+            }
+            if let Some(s) = op.sort {
+                params.insert("sort".to_owned(), s.to_string());
+            }
+            if let Some(l) = op.limit {
+                params.insert("limit".to_owned(), l.to_string());
+            }
         }
         match client_credentials {
             Some(c) => {
@@ -730,20 +743,36 @@ impl Bitso {
         book: &str,
         side: &str,
         r#type: &str,
-        optional_order_params: OptionalOrderParams<'_>,
+        optional_order_params: Option<OptionalOrderParams<'_>>,
     ) -> Result<JSONResponse<PlaceOrderPayload>> {
         let url = String::from("/v3/orders/");
-        let params = json!({
-            "book": book,
-            "side": side,
-            "type": r#type,
-            "major": optional_order_params.major,
-            "minor": optional_order_params.minor,
-            "price": optional_order_params.price,
-            "stop": optional_order_params.stop,
-            "time_in_force": optional_order_params.time_in_force,
-            "origin_id": optional_order_params.origin_id,
-        });
+        // Create map for parameters
+        let mut params_map = Map::new();
+        params_map.insert("book".to_owned(), Value::String(book.to_owned()));
+        params_map.insert("side".to_owned(), Value::String(side.to_owned()));
+        params_map.insert("type".to_owned(), Value::String(r#type.to_owned()));
+        // Add optional params
+        if let Some(op) = optional_order_params {
+            if let Some(ma) = op.major {
+                params_map.insert("major".to_owned(), Value::String(ma.to_owned()));
+            }
+            if let Some(mi) = op.minor {
+                params_map.insert("minor".to_owned(), Value::String(mi.to_owned()));
+            }
+            if let Some(p) = op.price {
+                params_map.insert("price".to_owned(), Value::String(p.to_owned()));
+            }
+            if let Some(s) = op.stop {
+                params_map.insert("stop".to_owned(), Value::String(s.to_owned()));
+            }
+            if let Some(tif) = op.time_in_force {
+                params_map.insert("time_in_force".to_owned(), Value::String(tif.to_owned()));
+            }
+            if let Some(oi) = op.origin_id {
+                params_map.insert("origin_id".to_owned(), Value::String(oi.to_owned()));
+            }
+        }
+        let params = json!(params_map);
         let client_credentials = self.client_credentials_manager.as_ref();
         match client_credentials {
             Some(c) => {

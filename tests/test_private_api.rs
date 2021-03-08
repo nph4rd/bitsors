@@ -251,12 +251,7 @@ async fn test_ledger() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
-    let result = bitso.get_ledger(None, optional_params).await;
+    let result = bitso.get_ledger(None, None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -304,7 +299,9 @@ async fn test_ledger_with_optional_params() {
         sort: Some("asc"),
         limit: Some(&1),
     };
-    let result = bitso.get_ledger(Some("trades"), optional_params).await;
+    let result = bitso
+        .get_ledger(Some("trades"), Some(optional_params))
+        .await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -421,14 +418,7 @@ async fn test_withdrawals() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
-    let result = bitso
-        .get_withdrawals(None, None, None, optional_params, None)
-        .await;
+    let result = bitso.get_withdrawals(None, None, None, None, None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -505,11 +495,6 @@ async fn test_withdrawals_wids() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
     let result = bitso
         .get_withdrawals(
             None,
@@ -518,7 +503,7 @@ async fn test_withdrawals_wids() {
                 "p4u8d7f0768ee91d3b33bee6483132i8",
             ]),
             None,
-            optional_params,
+            None,
             None,
         )
         .await;
@@ -554,17 +539,12 @@ async fn test_withdrawals_wid() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
     let result = bitso
         .get_withdrawals(
             Some("c5b8d7f0768ee91d3b33bee648318688"),
             None,
             None,
-            optional_params,
+            None,
             None,
         )
         .await;
@@ -599,16 +579,11 @@ async fn test_fundings_fid() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
     let result = bitso
         .get_fundings(
             Some("c5b8d7f0768ee91d3b33bee648318688"),
             None,
-            optional_params,
+            None,
             None,
             None,
         )
@@ -661,14 +636,7 @@ async fn test_fundings() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
-    let result = bitso
-        .get_fundings(None, None, optional_params, None, None)
-        .await;
+    let result = bitso.get_fundings(None, None, None, None, None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -714,14 +682,7 @@ async fn test_user_trades() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
-    let result = bitso
-        .get_user_trades("btc_mxn", None, None, optional_params)
-        .await;
+    let result = bitso.get_user_trades("btc_mxn", None, None, None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -870,14 +831,7 @@ async fn test_open_orders() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
-    let result = bitso
-        .get_open_orders(Some("btc_mxn"), optional_params)
-        .await;
+    let result = bitso.get_open_orders(Some("btc_mxn"), None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -947,7 +901,7 @@ async fn test_open_orders_optional_params() {
         limit: Some(&1),
     };
     let result = bitso
-        .get_open_orders(Some("btc_mxn"), optional_params)
+        .get_open_orders(Some("btc_mxn"), Some(optional_params))
         .await;
     println!("{:?}", result);
     assert!(result.is_ok());
@@ -1113,6 +1067,29 @@ async fn test_place_order() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
+    let result = bitso.place_order("btc_mxn", "sell", "market", None).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+}
+
+/// Test successful request to place_with optional params
+#[tokio::test]
+async fn test_place_order_with_optional_params() {
+    let _mock = mock("POST", "/v3/orders/")
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": {
+                "oid": "qlbga6b600n3xta7"
+            }
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
     let optional_order_params = OptionalOrderParams {
         major: Some("0.0001"),
         minor: None,
@@ -1122,7 +1099,7 @@ async fn test_place_order() {
         origin_id: None,
     };
     let result = bitso
-        .place_order("btc_mxn", "sell", "market", optional_order_params)
+        .place_order("btc_mxn", "sell", "market", Some(optional_order_params))
         .await;
     assert!(result.is_ok());
     println!("{:?}", result);

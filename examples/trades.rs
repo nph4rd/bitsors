@@ -1,15 +1,10 @@
 extern crate bitsors;
 
-use bitsors::client::{Bitso, OptionalParams};
+use bitsors::client::Bitso;
 
 #[tokio::main]
 async fn main() {
     let bitso = Bitso::default().build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
-    let result = bitso.get_trades("btc_mxn", optional_params).await;
+    let result = bitso.get_trades("btc_mxn", None).await;
     println!("{:?}", result);
 }

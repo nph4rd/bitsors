@@ -227,12 +227,7 @@ async fn test_trades() {
     let bitso = Bitso::default()
         .prefix(mockito::server_url().as_str())
         .build();
-    let optional_params = OptionalParams {
-        marker: None,
-        sort: None,
-        limit: None,
-    };
-    let result = bitso.get_trades("btc_mxn", optional_params).await;
+    let result = bitso.get_trades("btc_mxn", None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
@@ -271,7 +266,7 @@ async fn test_trades_with_optional_params() {
         sort: Some("asc"),
         limit: Some(&1),
     };
-    let result = bitso.get_trades("btc_mxn", optional_params).await;
+    let result = bitso.get_trades("btc_mxn", Some(optional_params)).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }

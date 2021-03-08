@@ -26,7 +26,7 @@ async fn main() {
         origin_id: None,
     };
     let result = bitso
-        .place_order("btc_mxn", "sell", "market", optional_order_params)
+        .place_order("btc_mxn", "sell", "market", Some(optional_order_params))
         .await;
     println!("{:?}", result);
 }
