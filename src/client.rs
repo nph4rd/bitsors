@@ -648,7 +648,6 @@ impl Bitso {
             }
             None => return Err(anyhow!(EMPTY_CREDENTIALS_MSG)),
         }
-        println!("{:?}", url);
         let result = self.get(&url, &mut params, ApiType::Private).await?;
         self.convert_result::<JSONResponse<Vec<OpenOrdersPayload>>>(&result)
     }
