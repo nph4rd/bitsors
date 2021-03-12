@@ -33,10 +33,10 @@ mod tests {
             .iter()
             .map(|b| b.name.as_str())
             .collect();
-        current_books.sort();
+        current_books.sort_unstable();
 
         let mut enum_books: Vec<String> = Books::iter().map(|b| b.to_string()).collect();
-        enum_books.sort();
+        enum_books.sort_unstable();
 
         assert_eq!(current_books, enum_books);
     }
