@@ -6,3 +6,4 @@ pub struct JSONResponse<T> {
 
 pub mod private;
 pub mod public;
+pub mod websocket;
