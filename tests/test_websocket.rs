@@ -13,6 +13,9 @@ pub struct Book {
     pub name: String,
 }
 
+/// Test that enum Books has the same number of
+/// variants as the current available books in Bitso.
+/// Also check that the names match.
 #[tokio::test]
 async fn all_books_and_proper_name() {
     let current_books = reqwest::get("https://api.bitso.com/v3/available_books/")
