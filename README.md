@@ -19,5 +19,7 @@ We also make sure Clippy is happy with us with:
 cargo clippy --all-features --all-targets -- -D warnings
 ```
 
+## Examples
+
 You can find lots of examples under the `examples/` folder!
 
