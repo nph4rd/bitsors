@@ -23,7 +23,7 @@ pub fn convert_map_to_string<
     string
 }
 
-//custom deserialize implementation for Books
+/// Custom deserialization implementation for the [Books] enum.
 pub fn deserialize_books<'de, D>(deserializer: D) -> Result<Books, D::Error>
 where
     D: Deserializer<'de>,
