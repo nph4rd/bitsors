@@ -50,8 +50,8 @@ async fn test_websocket_new() {
 /// Test that we can close the WebSocket connection
 #[tokio::test]
 async fn test_websocket_close() {
-    let mut socket = BitsoWebSocket::new();
-    socket.close();
+    let mut socket = BitsoWebSocket::new().unwrap();
+    socket.close().unwrap();
     println!("{:?}", socket);
 }
 
@@ -59,16 +59,21 @@ async fn test_websocket_close() {
 /// with a given WebSocket connection.
 #[tokio::test]
 async fn test_websocket_subscribe() {
-    let mut socket = BitsoWebSocket::new();
-    socket.subscribe(Subscription::Orders, Books::BtcMxn);
+    let mut socket = BitsoWebSocket::new().unwrap();
+    socket
+        .subscribe(Subscription::Orders, Books::BtcMxn)
+        .unwrap();
+    println!("{:?}", socket);
 }
 
 /// Test that we can read from a given WebSocket connection.
 #[tokio::test]
 async fn test_websocket_read() {
-    let mut socket = BitsoWebSocket::new();
-    socket.subscribe(Subscription::Orders, Books::BtcMxn);
-    match socket.read() {
+    let mut socket = BitsoWebSocket::new().unwrap();
+    socket
+        .subscribe(Subscription::Orders, Books::BtcMxn)
+        .unwrap();
+    match socket.read().unwrap() {
         Response::Orders(r) => {
             println!("{:?}", r);
             assert_eq!(r.type_field, "orders");
