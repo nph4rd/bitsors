@@ -39,3 +39,41 @@ async fn all_books_and_proper_name() {
 
     assert_eq!(current_books, enum_books);
 }
+
+/// Test WebSocket connection
+#[tokio::test]
+async fn test_websocket_new() {
+    let socket = BitsoWebSocket::new();
+    println!("{:?}", socket);
+}
+
+/// Test that we can close the WebSocket connection
+#[tokio::test]
+async fn test_websocket_close() {
+    let mut socket = BitsoWebSocket::new();
+    socket.close();
+    println!("{:?}", socket);
+}
+
+/// Test that we can subscribe to a channel
+/// with a given WebSocket connection.
+#[tokio::test]
+async fn test_websocket_subscribe() {
+    let mut socket = BitsoWebSocket::new();
+    socket.subscribe(Subscription::Orders, Books::BtcMxn);
+}
+
+/// Test that we can read from a given WebSocket connection.
+#[tokio::test]
+async fn test_websocket_read() {
+    let mut socket = BitsoWebSocket::new();
+    socket.subscribe(Subscription::Orders, Books::BtcMxn);
+    match socket.read() {
+        Response::Orders(r) => {
+            println!("{:?}", r);
+            assert_eq!(r.type_field, "orders");
+            assert_eq!(r.book, "btc_mxn");
+        }
+        _ => panic!("Did not get a Response::Order"),
+    }
+}

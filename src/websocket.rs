@@ -37,6 +37,7 @@ use tungstenite::{client::AutoStream, connect, Message, WebSocket};
 /// }
 /// ```
 
+#[derive(Debug)]
 pub struct BitsoWebSocket {
     socket: WebSocket<AutoStream>,
 }
