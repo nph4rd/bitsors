@@ -22,7 +22,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 lazy_static! {
     // HTTP Client
-    pub static ref CLIENT: Client = Client::new();
+    static ref CLIENT: Client = Client::new();
 }
 
 const EMPTY_CREDENTIALS_MSG: &str = "You need to set your Bitso API \
