@@ -16,20 +16,20 @@ use tungstenite::{client::AutoStream, connect, error::Result, Message, WebSocket
 /// ```no_run
 /// use bitsors::websocket::*;
 ///
-/// let mut socket = BitsoWebSocket::new();
+/// let mut socket = BitsoWebSocket::new().unwrap();
 ///
 /// // You can subscribe to a specific orders channel
-/// socket.subscribe(Subscription::Orders, Books::BtcMxn);
+/// socket.subscribe(Subscription::Orders, Books::BtcMxn).unwrap();
 ///                                                         
 /// // You can also iterate over all the Books and Subscription channels
 /// for book in Books::iter() {
 ///     for subs in Subscription::iter() {
-///         socket.subscribe(subs, book);
+///         socket.subscribe(subs, book).unwrap();
 ///     }
 /// }
 ///
 /// loop {
-///     match socket.read() {
+///     match socket.read().unwrap() {
 ///         Response::Orders(r) => println!("{:?}", r),
 ///         Response::Trades(r) => println!("{:?}", r),
 ///         Response::DiffOrders(r) => println!("{:?}", r),
