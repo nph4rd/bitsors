@@ -1,5 +1,15 @@
-use super::super::util::deserialize_books;
 use super::super::websocket::Books;
+use serde::{de, Deserialize, Deserializer};
+use std::str::FromStr;
+
+// Custom deserialization implementation for the [Books] enum.
+fn deserialize_books<'de, D>(deserializer: D) -> Result<Books, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let book = <&str>::deserialize(deserializer)?;
+    Books::from_str(book).map_err(de::Error::custom)
+}
 
 // ------------------------------- Trades -------------------------------------
 /// Represents a response from the Trades channel.
