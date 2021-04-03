@@ -1,7 +1,7 @@
 //! ## Description
 //! `bitsors` is a wrapper for the [Bitso API](https://bitso.com/api_info). So far
 //! it includes most of the functionality of the [public](https://bitso.com/api_info#public-rest-api)
-//! and [private](https://bitso.com/api_info#private-rest-api) API endpoints.
+//! and [private](https://bitso.com/api_info#private-rest-api) API endpoints, plus support for the [WebSocket API](https://bitso.com/api_info#websocket-api)
 //!
 //! __Disclaimer__: Some of the functionality for the private API is not covered in
 //! this wrapper.
