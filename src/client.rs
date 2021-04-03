@@ -21,7 +21,7 @@ use std::fmt;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 lazy_static! {
-    /// HTTP Client
+    // HTTP Client
     pub static ref CLIENT: Client = Client::new();
 }
 
@@ -87,7 +87,8 @@ impl fmt::Display for ApiError {
     }
 }
 
-/// A regular error from Bitso's API.
+/// A regular error from Bitso's API. It holds [ErrorDetails]
+///
 /// See: <https://bitso.com/api_info#error-codes>
 #[derive(Debug, Deserialize)]
 pub struct RegularError {
@@ -95,6 +96,8 @@ pub struct RegularError {
     pub error: ErrorDetails,
 }
 
+/// Details for the API calls.
+///
 /// See: <https://bitso.com/api_info#error-codes>
 #[derive(Debug, Deserialize)]
 pub struct ErrorDetails {
