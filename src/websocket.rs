@@ -4,7 +4,7 @@ use std::str::FromStr;
 pub use strum::{EnumCount, IntoEnumIterator};
 
 use strum_macros::{AsRefStr, Display, EnumCount, EnumIter, EnumString};
-use tungstenite::{client::AutoStream, connect, Message, WebSocket};
+use tungstenite::{client::AutoStream, connect, error::Result, Message, WebSocket};
 
 /// Bitso WebSocket object.
 ///
@@ -44,54 +44,43 @@ pub struct BitsoWebSocket {
 
 impl BitsoWebSocket {
     /// Creates a new WebSocket connection.
-    pub fn new() -> Self {
-        let (socket, _) = connect("wss://ws.bitso.com").expect("Can't connect");
-        BitsoWebSocket { socket }
+    pub fn new() -> Result<Self> {
+        let (socket, _) = connect("wss://ws.bitso.com")?;
+        Ok(BitsoWebSocket { socket })
     }
 
     /// Closes an existing WebSocket connection.
-    pub fn close(&mut self) {
-        self.socket.close(None).unwrap();
+    pub fn close(&mut self) -> Result<()> {
+        self.socket.close(None)
     }
 
     /// Creates a subscription request to a given channel.
-    pub fn subscribe(&mut self, subscription_type: Subscription, book: Books) {
+    pub fn subscribe(&mut self, subscription_type: Subscription, book: Books) -> Result<String> {
         let request = format!(
             r#"{{"action":"subscribe","book":"{}","type":"{}"}}"#,
             book.as_ref(),
             subscription_type.as_ref()
         );
-        self.socket.write_message(Message::Text(request)).unwrap();
-        let subscription_response = self.socket.read_message().unwrap().into_text().unwrap();
-        if !subscription_response.contains("ok") {
-            panic!("bad response from server");
-        }
+        self.socket.write_message(Message::Text(request))?;
+        self.socket.read_message()?.into_text()
     }
 
     /// Reads the response from the WebSocket connection.
-    pub fn read(&mut self) -> Response {
-        let mut data = self.socket.read_message().unwrap().into_text().unwrap();
+    pub fn read(&mut self) -> Result<Response> {
+        let mut data = self.socket.read_message()?.into_text()?;
         while data.contains(r#""type":"ka""#) || data.contains("subscribe") {
             //ignore keep alive and subscribe messages
-            data = self.socket.read_message().unwrap().into_text().unwrap();
+            data = self.socket.read_message()?.into_text()?;
         }
-
         let first_comma = data.find(':').unwrap();
         let second_comma = data[first_comma + 1..].find(',').unwrap() + first_comma;
-
         match Subscription::from_str(&data[first_comma + 2..second_comma]).unwrap() {
-            Subscription::Trades => Response::Trades(serde_json::from_str(&data).unwrap()),
-
-            Subscription::DiffOrders => Response::DiffOrders(serde_json::from_str(&data).unwrap()),
-
-            Subscription::Orders => Response::Orders(serde_json::from_str(&data).unwrap()),
+            Subscription::Trades => Ok(Response::Trades(serde_json::from_str(&data).unwrap())),
+            Subscription::DiffOrders => {
+                Ok(Response::DiffOrders(serde_json::from_str(&data).unwrap()))
+            }
+            Subscription::Orders => Ok(Response::Orders(serde_json::from_str(&data).unwrap())),
         }
-    }
-}
-
-impl Default for BitsoWebSocket {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
