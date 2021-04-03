@@ -6,8 +6,9 @@ pub use strum::{EnumCount, IntoEnumIterator};
 use strum_macros::{AsRefStr, Display, EnumCount, EnumIter, EnumString};
 use tungstenite::{client::AutoStream, connect, Message, WebSocket};
 
-/// Bitso WebSocket
-/// See: <https://bitso.com/api_info?#websocket-api>
+/// Bitso WebSocket object.
+///
+/// For more info see: <https://bitso.com/api_info?#websocket-api>
 ///
 /// Check all the possible options in [`Books`] and [`Subscription`]
 ///
@@ -17,10 +18,10 @@ use tungstenite::{client::AutoStream, connect, Message, WebSocket};
 ///
 /// let mut socket = BitsoWebSocket::new();
 ///
-/// // subscribe to the BTC-MXN orders channel
+/// // You can subscribe to a specific orders channel
 /// socket.subscribe(Subscription::Orders, Books::BtcMxn);
 ///                                                         
-/// // You can iterate over the Books and Subscription channels
+/// // You can also iterate over all the Books and Subscription channels
 /// for book in Books::iter() {
 ///     for subs in Subscription::iter() {
 ///         socket.subscribe(subs, book);
@@ -41,15 +42,18 @@ pub struct BitsoWebSocket {
 }
 
 impl BitsoWebSocket {
+    /// Creates a new WebSocket connection.
     pub fn new() -> Self {
         let (socket, _) = connect("wss://ws.bitso.com").expect("Can't connect");
         BitsoWebSocket { socket }
     }
 
+    /// Closes an existing WebSocket connection.
     pub fn close(&mut self) {
         self.socket.close(None).unwrap();
     }
 
+    /// Creates a subscription request to a given channel.
     pub fn subscribe(&mut self, subscription_type: Subscription, book: Books) {
         let request = format!(
             r#"{{"action":"subscribe","book":"{}","type":"{}"}}"#,
@@ -63,6 +67,7 @@ impl BitsoWebSocket {
         }
     }
 
+    /// Reads the response from the WebSocket connection.
     pub fn read(&mut self) -> Response {
         let mut data = self.socket.read_message().unwrap().into_text().unwrap();
         while data.contains(r#""type":"ka""#) || data.contains("subscribe") {
@@ -89,7 +94,7 @@ impl Default for BitsoWebSocket {
     }
 }
 
-/// Represents the possible subscription responses in the Bitso API.
+/// Represents the possible subscription responses in the Bitso WebSocket API.
 #[derive(Debug, Clone, PartialEq, Display, AsRefStr, EnumCount)]
 pub enum Response {
     ///[Trades Channel](https://bitso.com/api_info?#trades-channel)
@@ -102,7 +107,7 @@ pub enum Response {
     Orders(Orders),
 }
 
-/// Represents the three subscription channels in the Bitso API.
+/// Represents the three subscription channels in the Bitso WebSocket API.
 #[derive(Debug, Copy, Clone, PartialEq, Display, AsRefStr, EnumString, EnumIter)]
 pub enum Subscription {
     ///[Trades Channel](https://bitso.com/api_info?#trades-channel)
@@ -118,8 +123,9 @@ pub enum Subscription {
     Orders,
 }
 
-/// Represents all the possible exchanges available in Bitso.
-/// See: <https://bitso.com/api_info#available-books>
+/// Represents all the possible books available in Bitso.
+///
+/// For more info, see: <https://bitso.com/api_info#available-books>
 #[derive(Debug, Copy, Clone, PartialEq, Display, AsRefStr, EnumCount, EnumIter, EnumString)]
 pub enum Books {
     #[strum(serialize = "btc_mxn")]
