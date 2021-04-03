@@ -2,7 +2,6 @@ use super::auth::BitsoCredentials;
 use super::model::private::*;
 use super::model::public::*;
 use super::model::JSONResponse;
-use super::util::convert_map_to_string;
 use anyhow::Result;
 use hex::encode;
 use openssl::hash::MessageDigest;
@@ -18,6 +17,8 @@ use serde_json::Value;
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt;
+use std::fmt::Debug;
+use std::hash::Hash;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 lazy_static! {
@@ -33,6 +34,23 @@ const EMPTY_CREDENTIALS_MSG: &str = "You need to set your Bitso API \
                                      API_SECRET=your_api_secret. \
                                      For more information visit: \
                                      `https://bitso.com/api_info#generating-api-keys`";
+
+fn convert_map_to_string<
+    K: Debug + Eq + Hash + ToString,
+    V: Debug + ToString,
+    S: ::std::hash::BuildHasher,
+>(
+    map: &HashMap<K, V, S>,
+) -> String {
+    let mut string: String = String::new();
+    for (key, value) in map.iter() {
+        string.push_str(&key.to_string());
+        string.push('=');
+        string.push_str(&value.to_string());
+        string.push('&');
+    }
+    string
+}
 
 /// API Type that indicates whether a method
 /// corresponds to the public or private API.

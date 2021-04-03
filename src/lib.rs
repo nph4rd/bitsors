@@ -40,5 +40,4 @@ extern crate anyhow;
 pub mod auth;
 pub mod client;
 pub mod model;
-pub mod util;
 pub mod websocket;
