@@ -117,6 +117,7 @@ pub enum Subscription {
 ///
 /// For more info, see: <https://bitso.com/api_info#available-books>
 #[derive(Debug, Copy, Clone, PartialEq, Display, AsRefStr, EnumCount, EnumIter, EnumString)]
+#[non_exhaustive]
 pub enum Books {
     #[strum(serialize = "btc_mxn")]
     BtcMxn,
