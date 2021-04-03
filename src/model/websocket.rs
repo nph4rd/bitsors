@@ -2,6 +2,9 @@ use super::super::util::deserialize_books;
 use super::super::websocket::Books;
 
 // ------------------------------- Trades -------------------------------------
+/// Represents a response from the Trades channel.
+///
+/// For more info see: <https://bitso.com/api_info?#trades-channel>
 #[derive(Debug, Clone, PartialEq, serde_derive::Deserialize)]
 pub struct Trades {
     #[serde(rename = "type")]
@@ -11,6 +14,9 @@ pub struct Trades {
     pub payload: Vec<TradesPayload>,
 }
 
+/// Represents the payload in the response from the Trades channel.
+///
+/// For more info see: <https://bitso.com/api_info?#trades-channel>
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Deserialize)]
 pub struct TradesPayload {
     /// A unique number identifying the transaction
@@ -25,6 +31,9 @@ pub struct TradesPayload {
 
 // ------------------------------- DiffOrders -------------------------------------
 
+/// Represents a response from the Diff-Orders channel.
+///
+/// For more info see: <https://bitso.com/api_info?#diff-orders>
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 pub struct DiffOrders {
     #[serde(rename = "type")]
@@ -34,6 +43,9 @@ pub struct DiffOrders {
     pub sequence: i64,
 }
 
+/// Represents the payload in the response from the Diff-Orders channel.
+///
+/// For more info see: <https://bitso.com/api_info?#diff-orders>
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 pub struct DiffOrdersPayload {
     /// Unix timestamp
@@ -49,6 +61,9 @@ pub struct DiffOrdersPayload {
 
 // ------------------------------- Orders -------------------------------------
 
+/// Represents a response from the Orders channel.
+///
+/// For more info see: <https://bitso.com/api_info?#orders>
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Deserialize)]
 pub struct Orders {
     #[serde(rename = "type")]
@@ -57,12 +72,18 @@ pub struct Orders {
     pub payload: OrdersPayload,
 }
 
+/// Represents a payload in the response from the Orders channel.
+///
+/// For more info see: <https://bitso.com/api_info?#orders>
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Deserialize)]
 pub struct OrdersPayload {
     pub bids: Vec<BidAsk>,
     pub asks: Vec<BidAsk>,
 }
 
+/// Represents a bid/ask object in response from the Orders channel.
+///
+/// For more info see: <https://bitso.com/api_info?#orders>
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Deserialize)]
 pub struct BidAsk {
     /// Rate
