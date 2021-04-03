@@ -64,6 +64,7 @@ pub struct OptionalParams<'a> {
 }
 
 /// Optional parameters for an order.
+///
 /// For more info see: <https://bitso.com/api_info#place-an-order>
 pub struct OptionalOrderParams<'a> {
     pub major: Option<&'a str>,
