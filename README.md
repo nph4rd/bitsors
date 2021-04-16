@@ -4,7 +4,7 @@
 
 # bitsors
 
-`bitsors` is now hosted in Bitso's officicial GitHub organization! Find the repo [here](https://github.com/bitsoex/).
+`bitsors` is now hosted in Bitso's official GitHub organization! Find the repo [here](https://github.com/bitsoex/bitso-rs).
 
 ~~A Rust wrapper for the [Bitso API](https://bitso.com/api_info/), with support for the [public](https://bitso.com/api_info#public-rest-api) and [private](https://bitso.com/api_info#private-rest-api) API endpoints, plus the [WebSocket API](https://bitso.com/api_info#websocket-api).~~
 
