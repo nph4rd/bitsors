@@ -3,23 +3,26 @@
 [![CI checks](https://github.com/arturomf94/bitsors/workflows/CI%20checks/badge.svg)](https://github.com/arturomf94/bitsors/actions?query=workflow%3A%22CI+checks%22)
 
 # bitsors
-A Rust wrapper for the [Bitso API](https://bitso.com/api_info/), with support for the [public](https://bitso.com/api_info#public-rest-api) and [private](https://bitso.com/api_info#private-rest-api) API endpoints, plus the [WebSocket API](https://bitso.com/api_info#websocket-api).
+
+`bitsors` is now hosted in Bitso's officicial GitHub organization! Find the repo [here](https://github.com/bitsoex/).
+
+~~A Rust wrapper for the [Bitso API](https://bitso.com/api_info/), with support for the [public](https://bitso.com/api_info#public-rest-api) and [private](https://bitso.com/api_info#private-rest-api) API endpoints, plus the [WebSocket API](https://bitso.com/api_info#websocket-api).~~
 
 
 
-## Testing
+## ~~Testing~~
 
 ```bash
 cargo test
 ```
 
-We also make sure Clippy is happy with us with: 
+~~We also make sure Clippy is happy with us with:~~
 
 ```bash
 cargo clippy --all-features --all-targets -- -D warnings
 ```
 
-## Examples
+## ~~Examples~~
 
-You can find lots of examples under the `examples/` folder!
+~~You can find lots of examples under the `examples/` folder!~~
 
